@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "hellorust",
+    "showcase"
+]
+
+[profile.release]
+lto = true

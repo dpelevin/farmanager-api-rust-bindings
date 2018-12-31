@@ -1,0 +1,8 @@
+[package]
+name = "farmanager_build"
+version = "0.1.0"
+authors = ["Dmitry Pelevin <dpelevin@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+syn = { version = "0.14", features = ["full"] }

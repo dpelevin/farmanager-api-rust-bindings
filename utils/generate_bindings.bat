@@ -1,0 +1,342 @@
+bindgen --no-layout-tests^
+ --raw-line "use libc::{c_void, c_int, c_longlong, c_ulonglong, c_uchar, intptr_t, uintptr_t, size_t};"^
+ --raw-line ""^
+ --ctypes-prefix "libc"^
+ --rust-target "1.25"^
+ --whitelist-var "FCF_.*"^
+ --whitelist-type FarColor^
+ --whitelist-type COLORDIALOGFLAGS^
+ --whitelist-var "CDF_.*"^
+ --whitelist-type FARAPICOLORDIALOG^
+ --whitelist-var "FMSG_.*"^
+ --whitelist-type FARAPIMESSAGE^
+ --whitelist-type FARDIALOGITEMTYPES --rustified-enum FARDIALOGITEMTYPES^
+ --whitelist-var "DIF_.*"^
+ --whitelist-type FARMESSAGE --rustified-enum FARMESSAGE^
+ --whitelist-type FARCHECKEDSTATE --rustified-enum FARCHECKEDSTATE^
+ --whitelist-type FARCOMBOBOXEVENTTYPE --rustified-enum FARCOMBOBOXEVENTTYPE^
+ --whitelist-var "LIF_.*"^
+ --whitelist-type FarListItem^
+ --whitelist-type FarListUpdate^
+ --whitelist-type FarListInsert^
+ --whitelist-type FarListGetItem^
+ --whitelist-type FarListPos^
+ --whitelist-var "LIFIND_.*"^
+ --whitelist-type FarListFind^
+ --whitelist-type FarListDelete^
+ --whitelist-var "LINFO_.*"^
+ --whitelist-type FarListInfo^
+ --whitelist-type FarListItemData^
+ --whitelist-type FarList^
+ --whitelist-type FarListTitles^
+ --whitelist-type FarDialogItemColors^
+ --whitelist-type FAR_CHAR_INFO^
+ --whitelist-type FarDialogItem^
+ --whitelist-type FarDialogItemData^
+ --whitelist-type FarDialogEvent^
+ --whitelist-type OpenDlgPluginData^
+ --whitelist-type DialogInfo^
+ --whitelist-type FarGetDialogItem^
+ --whitelist-var "FDLG_.*"^
+ --whitelist-type FARWINDOWPROC^
+ --whitelist-type FARAPISENDDLGMESSAGE^
+ --whitelist-type FARAPIDEFDLGPROC^
+ --whitelist-type FARAPIDIALOGINIT^
+ --whitelist-type FARAPIDIALOGRUN^
+ --whitelist-type FARAPIDIALOGFREE^
+ --whitelist-type FarKey^
+ --whitelist-var "MIF_.*"^
+ --whitelist-type FarMenuItem^
+ --whitelist-var "FMENU_.*"^
+ --whitelist-type FARAPIMENU^
+ --whitelist-var "PPIF_.*"^
+ --whitelist-type FarPanelItemFreeInfo^
+ --whitelist-type FARPANELITEMFREECALLBACK^
+ --whitelist-type UserDataItem^
+ --whitelist-type PluginPanelItem^
+ --whitelist-type FarGetPluginPanelItem^
+ --whitelist-type SortingPanelItem^
+ --whitelist-var "PFLAGS_.*"^
+ --whitelist-type PANELINFOTYPE --rustified-enum PANELINFOTYPE^
+ --whitelist-type OPENPANELINFO_SORTMODES --rustified-enum OPENPANELINFO_SORTMODES^
+ --whitelist-type PanelInfo^
+ --whitelist-type PanelRedrawInfo^
+ --whitelist-type CmdLineSelect^
+ --whitelist-type FarPanelDirectory^
+ --whitelist-type FILE_CONTROL_COMMANDS --rustified-enum FILE_CONTROL_COMMANDS^
+ --whitelist-type FARAPITEXT^
+ --whitelist-type FARAPISAVESCREEN^
+ --whitelist-type FARAPIRESTORESCREEN^
+ --whitelist-type FARAPIGETDIRLIST^
+ --whitelist-type FARAPIGETPLUGINDIRLIST^
+ --whitelist-type FARAPIFREEDIRLIST^
+ --whitelist-type FARAPIFREEPLUGINDIRLIST^
+ --whitelist-var "VF_.*"^
+ --whitelist-type FARAPIVIEWER^
+ --whitelist-var "EF_.*"^
+ --whitelist-type EDITOR_EXITCODE --rustified-enum EDITOR_EXITCODE^
+ --whitelist-type FARAPIEDITOR^
+ --whitelist-type FARAPIGETMSG^
+ --whitelist-var "FHELP_.*"^
+ --whitelist-type FARAPISHOWHELP^
+ --whitelist-type ADVANCED_CONTROL_COMMANDS --rustified-enum ADVANCED_CONTROL_COMMANDS^
+ --whitelist-type FAR_MACRO_CONTROL_COMMANDS --rustified-enum FAR_MACRO_CONTROL_COMMANDS^
+ --whitelist-var "KMFLAGS_.*"^
+ --whitelist-type FARMACROSENDSTRINGCOMMAND --rustified-enum FARMACROSENDSTRINGCOMMAND^
+ --whitelist-type FARMACROAREA --rustified-enum FARMACROAREA^
+ --whitelist-type FARMACROSTATE --rustified-enum FARMACROSTATE^
+ --whitelist-type FARMACROPARSEERRORCODE --rustified-enum FARMACROPARSEERRORCODE^
+ --whitelist-type MacroParseResult^
+ --whitelist-type MacroSendMacroText^
+ --whitelist-var "AKMFLAGS_.*"^
+ --whitelist-type FARMACROCALLBACK^
+ --whitelist-type MacroAddMacro^
+ --whitelist-type FARMACROVARTYPE --rustified-enum FARMACROVARTYPE^
+ --whitelist-type FarMacroValue^
+ --whitelist-type FarMacroCall^
+ --whitelist-type FarGetValue^
+ --whitelist-type MacroExecuteString^
+ --whitelist-type FarMacroLoad^
+ --whitelist-var "FSETCLR_.*"^
+ --whitelist-type FarSetColors^
+ --whitelist-type WINDOWINFO_TYPE --rustified-enum WINDOWINFO_TYPE^
+ --whitelist-var "WIF_.*"^
+ --whitelist-type WindowInfo^
+ --whitelist-type WindowType^
+ --whitelist-type TASKBARPROGRESSTATE --rustified-enum TASKBARPROGRESSTATE^
+ --whitelist-type ProgressValue^
+ --whitelist-type VIEWER_CONTROL_COMMANDS --rustified-enum VIEWER_CONTROL_COMMANDS^
+ --whitelist-var "VOPT_.*"^
+ --whitelist-type VIEWER_SETMODE_TYPES --rustified-enum VIEWER_SETMODE_TYPES^
+ --whitelist-var "VSMFL_.*"^
+ --whitelist-type ViewerSetMode^
+ --whitelist-type ViewerSelect^
+ --whitelist-var "VSP_.*"^
+ --whitelist-type ViewerSetPosition^
+ --whitelist-var "VMF_.*"^
+ --whitelist-type VIEWER_MODE_TYPE --rustified-enum VIEWER_MODE_TYPE^
+ --whitelist-type ViewerMode^
+ --whitelist-type ViewerInfo^
+ --whitelist-type VIEWER_EVENTS --rustified-enum VIEWER_EVENTS^
+ --whitelist-type EDITOR_EVENTS --rustified-enum EDITOR_EVENTS^
+ --whitelist-type DIALOG_EVENTS --rustified-enum DIALOG_EVENTS^
+ --whitelist-type SYNCHRO_EVENTS --rustified-enum SYNCHRO_EVENTS^
+ --whitelist-type EDITOR_CONTROL_COMMANDS --rustified-enum EDITOR_CONTROL_COMMANDS^
+ --whitelist-type EDITOR_SETPARAMETER_TYPES --rustified-enum EDITOR_SETPARAMETER_TYPES^
+ --whitelist-type EditorSetParameter^
+ --whitelist-type EDITOR_UNDOREDO_COMMANDS --rustified-enum EDITOR_UNDOREDO_COMMANDS^
+ --whitelist-type EditorUndoRedo^
+ --whitelist-type EditorGetString^
+ --whitelist-type EditorSetString^
+ --whitelist-type EXPAND_TABS --rustified-enum EXPAND_TABS^
+ --whitelist-type EDITOR_OPTIONS --rustified-enum EDITOR_OPTIONS^
+ --whitelist-type EDITOR_BLOCK_TYPES --rustified-enum EDITOR_BLOCK_TYPES^
+ --whitelist-type EDITOR_CURRENTSTATE --rustified-enum EDITOR_CURRENTSTATE^
+ --whitelist-type EditorInfo^
+ --whitelist-type EditorBookmarks^
+ --whitelist-type EditorSetPosition^
+ --whitelist-type EditorSelect^
+ --whitelist-type EditorConvertPos^
+ --whitelist-var "ECF_.*"^
+ --whitelist-type EditorColor^
+ --whitelist-type EditorDeleteColor^
+ --whitelist-type EditorSaveFile^
+ --whitelist-type EDITOR_CHANGETYPE --rustified-enum EDITOR_CHANGETYPE^
+ --whitelist-type EditorChange^
+ --whitelist-type EditorSubscribeChangeEvent^
+ --whitelist-var "FIB_.*"^
+ --whitelist-type FARAPIINPUTBOX^
+ --whitelist-type FAR_PLUGINS_CONTROL_COMMANDS --rustified-enum FAR_PLUGINS_CONTROL_COMMANDS^
+ --whitelist-type FAR_PLUGIN_LOAD_TYPE --rustified-enum FAR_PLUGIN_LOAD_TYPE^
+ --whitelist-type FAR_PLUGIN_FIND_TYPE --rustified-enum FAR_PLUGIN_FIND_TYPE^
+ --whitelist-var "FPF_.*"^
+ --whitelist-type FAR_FILE_FILTER_CONTROL_COMMANDS --rustified-enum FAR_FILE_FILTER_CONTROL_COMMANDS^
+ --whitelist-type FAR_FILE_FILTER_TYPE --rustified-enum FAR_FILE_FILTER_TYPE^
+ --whitelist-type FAR_REGEXP_CONTROL_COMMANDS --rustified-enum FAR_REGEXP_CONTROL_COMMANDS^
+ --whitelist-type RegExpMatch^
+ --whitelist-type RegExpSearch^
+ --whitelist-type FAR_SETTINGS_CONTROL_COMMANDS --rustified-enum FAR_SETTINGS_CONTROL_COMMANDS^
+ --whitelist-type FARSETTINGSTYPES --rustified-enum FARSETTINGSTYPES^
+ --whitelist-type FARSETTINGS_SUBFOLDERS --rustified-enum FARSETTINGS_SUBFOLDERS^
+ --whitelist-type FAR_PLUGIN_SETTINGS_LOCATION --rustified-enum FAR_PLUGIN_SETTINGS_LOCATION^
+ --whitelist-type FarSettingsCreate^
+ --whitelist-type FarSettingsItem^
+ --whitelist-type FarSettingsName^
+ --whitelist-type FarSettingsHistory^
+ --whitelist-type FarSettingsEnum^
+ --whitelist-type FarSettingsValue^
+ --whitelist-type FARAPIPANELCONTROL^
+ --whitelist-type FARAPIADVCONTROL^
+ --whitelist-type FARAPIVIEWERCONTROL^
+ --whitelist-type FARAPIEDITORCONTROL^
+ --whitelist-type FARAPIMACROCONTROL^
+ --whitelist-type FARAPIPLUGINSCONTROL^
+ --whitelist-type FARAPIFILEFILTERCONTROL^
+ --whitelist-type FARAPIREGEXPCONTROL^
+ --whitelist-type FARAPISETTINGSCONTROL^
+ --whitelist-type FARCLIPBOARD_TYPE --rustified-enum FARCLIPBOARD_TYPE^
+ --whitelist-type FARSTDSPRINTF^
+ --whitelist-type FARSTDSNPRINTF^
+ --whitelist-type FARSTDSSCANF^
+ --whitelist-type FARSTDQSORT^
+ --whitelist-type FARSTDBSEARCH^
+ --whitelist-type FARSTDGETFILEOWNER^
+ --whitelist-type FARSTDGETNUMBEROFLINKS^
+ --whitelist-type FARSTDATOI^
+ --whitelist-type FARSTDATOI64^
+ --whitelist-type FARSTDITOA64^
+ --whitelist-type FARSTDITOA^
+ --whitelist-type FARSTDLTRIM^
+ --whitelist-type FARSTDRTRIM^
+ --whitelist-type FARSTDTRIM^
+ --whitelist-type FARSTDTRUNCSTR^
+ --whitelist-type FARSTDTRUNCPATHSTR^
+ --whitelist-type FARSTDQUOTESPACEONLY^
+ --whitelist-type FARSTDPOINTTONAME^
+ --whitelist-type FARSTDADDENDSLASH^
+ --whitelist-type FARSTDCOPYTOCLIPBOARD^
+ --whitelist-type FARSTDPASTEFROMCLIPBOARD^
+ --whitelist-type FARSTDLOCALISLOWER^
+ --whitelist-type FARSTDLOCALISUPPER^
+ --whitelist-type FARSTDLOCALISALPHA^
+ --whitelist-type FARSTDLOCALISALPHANUM^
+ --whitelist-type FARSTDLOCALUPPER^
+ --whitelist-type FARSTDLOCALLOWER^
+ --whitelist-type FARSTDLOCALUPPERBUF^
+ --whitelist-type FARSTDLOCALLOWERBUF^
+ --whitelist-type FARSTDLOCALSTRUPR^
+ --whitelist-type FARSTDLOCALSTRLWR^
+ --whitelist-type FARSTDLOCALSTRICMP^
+ --whitelist-type FARSTDLOCALSTRNICMP^
+ --whitelist-type FARSTDFARCLOCK^
+ --whitelist-type FARSTDCOMPARESTRINGS^
+ --whitelist-var "PN_.*"^
+ --whitelist-type FARSTDPROCESSNAME^
+ --whitelist-type FARSTDUNQUOTE^
+ --whitelist-var "XLAT_.*"^
+ --whitelist-type FARSTDINPUTRECORDTOKEYNAME^
+ --whitelist-type FARSTDXLAT^
+ --whitelist-type FARSTDKEYNAMETOINPUTRECORD^
+ --whitelist-type FRSUSERFUNC^
+ --whitelist-var "FRS_.*"^
+ --whitelist-type FARSTDRECURSIVESEARCH^
+ --whitelist-type FARSTDMKTEMP^
+ --whitelist-type FARSTDGETPATHROOT^
+ --whitelist-type LINK_TYPE --rustified-enum LINK_TYPE^
+ --whitelist-var "MLF_.*"^
+ --whitelist-type FARSTDMKLINK^
+ --whitelist-type FARGETREPARSEPOINTINFO^
+ --whitelist-type CONVERTPATHMODES --rustified-enum CONVERTPATHMODES^
+ --whitelist-type FARCONVERTPATH^
+ --whitelist-type FARGETCURRENTDIRECTORY^
+ --whitelist-var "FFFS_.*"^
+ --whitelist-type FARFORMATFILESIZE^
+ --whitelist-type FarStandardFunctions^
+ --whitelist-type PluginStartupInfo^
+ --whitelist-type FARAPICREATEFILE^
+ --whitelist-type FARAPIGETFILEATTRIBUTES^
+ --whitelist-type FARAPISETFILEATTRIBUTES^
+ --whitelist-type FARAPIMOVEFILEEX^
+ --whitelist-type FARAPIDELETEFILE^
+ --whitelist-type FARAPIREMOVEDIRECTORY^
+ --whitelist-type FARAPICREATEDIRECTOR^
+ --whitelist-type ArclitePrivateInfo^
+ --whitelist-type NetBoxPrivateInfo^
+ --whitelist-type MacroPluginReturn^
+ --whitelist-type FARAPICALLFAR^
+ --whitelist-type MacroPrivateInfo^
+ --whitelist-var "PF_PRELOAD"^
+ --whitelist-var "PF_DISABLEPANELS"^
+ --whitelist-var "PF_EDITOR"^
+ --whitelist-var "PF_VIEWER"^
+ --whitelist-var "PF_FULLCMDLINE"^
+ --whitelist-var "PF_DIALOG"^
+ --whitelist-var "PF_NONE"^
+ --whitelist-type PluginMenuItem^
+ --whitelist-type VERSION_STAGE --rustified-enum VERSION_STAGE^
+ --whitelist-type VersionInfo^
+ --whitelist-type GlobalInfo^
+ --whitelist-type PluginInfo^
+ --whitelist-type FarGetPluginInformation^
+ --whitelist-var "IPLFLAGS_.*"^
+ --whitelist-type InfoPanelLine^
+ --whitelist-var "PMFLAGS_.*"^
+ --whitelist-type PanelMode^
+ --whitelist-var "OPIF_.*"^
+ --whitelist-type KeyBarLabel^
+ --whitelist-type KeyBarTitles^
+ --whitelist-type FarSetKeyBarTitles^
+ --whitelist-var "OPM_.*"^
+ --whitelist-type OpenPanelInfo^
+ --whitelist-type AnalyseInfo^
+ --whitelist-type OpenAnalyseInfo^
+ --whitelist-type OpenMacroInfo^
+ --whitelist-var "FOSF_.*"^
+ --whitelist-type OpenShortcutInfo^
+ --whitelist-type OpenCommandLineInfo^
+ --whitelist-type OPENFROM --rustified-enum OPENFROM^
+ --whitelist-type MACROCALLTYPE --rustified-enum MACROCALLTYPE^
+ --whitelist-type MACROPLUGINRETURNTYPE --rustified-enum MACROPLUGINRETURNTYPE^
+ --whitelist-type OpenMacroPluginInfo^
+ --whitelist-type FAR_EVENTS --rustified-enum FAR_EVENTS^
+ --whitelist-type OpenInfo^
+ --whitelist-type SetDirectoryInfo^
+ --whitelist-type SetFindListInfo^
+ --whitelist-type PutFilesInfo^
+ --whitelist-type ProcessHostFileInfo^
+ --whitelist-type MakeDirectoryInfo^
+ --whitelist-type CompareInfo^
+ --whitelist-type GetFindDataInfo^
+ --whitelist-type FreeFindDataInfo^
+ --whitelist-type GetFilesInfo^
+ --whitelist-type DeleteFilesInfo^
+ --whitelist-type ProcessPanelInputInfo^
+ --whitelist-type ProcessEditorInputInfo^
+ --whitelist-var "PCIF_.*"^
+ --whitelist-type ProcessConsoleInputInfo^
+ --whitelist-type ExitInfo^
+ --whitelist-type ProcessPanelEventInfo^
+ --whitelist-type ProcessEditorEventInfo^
+ --whitelist-type ProcessDialogEventInfo^
+ --whitelist-type ProcessSynchroEventInfo^
+ --whitelist-type ProcessViewerEventInfo^
+ --whitelist-type ClosePanelInfo^
+ --whitelist-type CloseAnalyseInfo^
+ --whitelist-type ConfigureInfo^
+ --whitelist-type GetContentFieldsInfo^
+ --whitelist-type GetContentDataInfo^
+ --whitelist-type ErrorInfo^
+ --whitelist-function AnalyseW^
+ --whitelist-function CloseAnalyseW^
+ --whitelist-function ClosePanelW^
+ --whitelist-function CompareW^
+ --whitelist-function ConfigureW^
+ --whitelist-function DeleteFilesW^
+ --whitelist-function ExitFARW^
+ --whitelist-function FreeFindDataW^
+ --whitelist-function GetFilesW^
+ --whitelist-function GetFindDataW^
+ --whitelist-function GetGlobalInfoW^
+ --whitelist-function GetOpenPanelInfoW^
+ --whitelist-function GetPluginInfoW^
+ --whitelist-function MakeDirectoryW^
+ --whitelist-function OpenW^
+ --whitelist-function ProcessDialogEventW^
+ --whitelist-function ProcessEditorEventW^
+ --whitelist-function ProcessEditorInputW^
+ --whitelist-function ProcessPanelEventW^
+ --whitelist-function ProcessHostFileW^
+ --whitelist-function ProcessPanelInputW^
+ --whitelist-function ProcessConsoleInputW^
+ --whitelist-function ProcessSynchroEventW^
+ --whitelist-function ProcessViewerEventW^
+ --whitelist-function PutFilesW^
+ --whitelist-function SetDirectoryW^
+ --whitelist-function SetFindListW^
+ --whitelist-function SetStartupInfoW^
+ --whitelist-function GetContentFieldsW^
+ --whitelist-function GetContentDataW^
+ --whitelist-function FreeContentDataW^
+ %2^
+ -o %3^
+ -- -target %1 --verbose

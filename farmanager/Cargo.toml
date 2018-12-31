@@ -1,0 +1,41 @@
+[package]
+name = "farmanager"
+version = "0.0.0"
+authors = ["Dmitry Pelevin <dpelevin@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+# IntelliJ Rust have problems with parsing cfg_if macro, which is present after the libc version 0.2.33.
+# https://github.com/rust-lang/libc/blob/cd3b87dc7ee79d33e6bad054ef1d4d54b00bcea1/src/lib.rs#L104
+# So, for development purpoces, exact version is temporary specified.
+libc = "=0.2.33"
+winapi = { version = "0.3", features = ["winuser", "minwinbase", "wincon", "winerror", "combaseapi", "handleapi"] }
+bitflags = "1.0"
+widestring = "0.2.*"
+log = { version = "0.4", features = ["max_level_trace", "release_max_level_info"] }
+failure = "0.1"
+
+[features]
+default = []
+panel = ["panel_find_data", "panel_analyse", "panel_compare", "panel_delete_files", "panel_make_directory", "panel_get_files", "panel_open", "panel_close", "panel_process_panel_event", "panel_process_host_file", "panel_process_panel_input", "panel_put_files", "panel_set_directory", "panel_set_find_list"]
+panel_find_data = []
+panel_analyse = []
+panel_compare = []
+panel_delete_files = []
+panel_make_directory = []
+panel_get_files = []
+panel_open = []
+panel_close = []
+panel_process_panel_event = []
+panel_process_host_file = []
+panel_process_panel_input = []
+panel_put_files = []
+panel_set_directory = []
+panel_set_find_list = []
+dialog = []
+editor = []
+macros = []
+misc = []
+plugin_manager = []
+settings = []
+viewer = []

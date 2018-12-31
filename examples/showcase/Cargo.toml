@@ -1,0 +1,28 @@
+[lib]
+name = "showcase"
+crate-type = ["cdylib"]
+
+[package]
+build = "build.rs"
+name = "showcase"
+version = "0.1.0"
+authors = ["Dmitry Pelevin <dpelevin@gmail.com>"]
+edition = "2018"
+
+[build-dependencies.farmanager_build]
+path = "../../farmanager_build"
+
+[dependencies]
+libc = "0.2.*"
+widestring = "0.2.*"
+log = { version = "0.4", features = ["max_level_trace", "release_max_level_info"] }
+kernel32-sys = "0.2"
+simplelog = "0.5"
+farmanager_codegen = { path = "../../farmanager_codegen" }
+farmanager = { path = "../../farmanager", features = ["panel", "settings", "misc"] }
+fs2 = "0.4.3"
+dirs = "1.0"
+
+[dependencies.winapi]
+version = "0.3"
+features = ["winuser", "minwinbase"]

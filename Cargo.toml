@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "farmanager_build",
+    "farmanager_codegen",
+    "farmanager"
+]

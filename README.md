@@ -9,10 +9,11 @@ Though bindings are at PoC stage, it is already possible to create Far Manager p
 
 ## Usage
 
-Examples:
+Just clone ['HelloWorld' plugin](https://github.com/dpelevin/farmanager-hellorust-plugin) repository and use it as a skeleton for your Far Manager plugin.
 
-* ['HelloWorld' plugin](examples/hellorust)
-* ['API Showcase' plugin](examples/showcase)
+Other examples:
+
+* ['API Showcase' plugin](examples/showcase) - more complex example
 
 ## Implementation status
 
@@ -145,3 +146,8 @@ Service functions
 This project is licensed under the terms of both the MIT license and the Apache License (Version 2.0).
 
 See [LICENSE-APACHE](LICENSE-APACHE), [LICENSE-MIT](LICENSE-MIT)
+
+## Contacts
+
+* [Far Manager Forum topic](https://forum.farmanager.com/viewtopic.php?f=8&t=11469)
+* [Telegram channel](https://t.me/joinchat/CS6ijBX6C9hh0H2TQ23umA)

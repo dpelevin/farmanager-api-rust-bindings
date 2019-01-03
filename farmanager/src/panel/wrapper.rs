@@ -39,10 +39,10 @@ impl From<crate::panel::PluginPanelItem> for PluginPanelItem {
 
 impl From<&crate::panel::PluginPanelItem> for PluginPanelItem {
     fn from(src: &crate::panel::PluginPanelItem) -> Self {
-        let file_name = WideString::from(src.file_name.as_str());
-        let alternate_file_name = src.alternate_file_name.as_ref().map(|s| WideString::from(s.as_str()));
-        let description = src.description.as_ref().map(|s| WideString::from(s.as_str()));
-        let owner = src.owner.as_ref().map(|s| WideString::from(s.as_str()));
+        let file_name = src.file_name.clone();
+        let alternate_file_name = src.alternate_file_name.as_ref().map(|s| s.clone());
+        let description = src.description.as_ref().map(|s| s.clone());
+        let owner = src.owner.as_ref().map(|s| s.clone());
 
         let inner: ffi::PluginPanelItem = ffi::PluginPanelItem {
             creation_time: src.creation_time,
@@ -114,8 +114,8 @@ impl AsInner<ffi::InfoPanelLine> for InfoPanelLine {
 
 impl From<&crate::panel::InfoPanelLine> for InfoPanelLine {
     fn from(src: &crate::panel::InfoPanelLine) -> Self {
-        let text = WideString::from(src.text.as_str());
-        let data = WideString::from(src.data.as_str());
+        let text = src.text.clone();
+        let data = src.data.clone();
         InfoPanelLine {
             inner: ffi::InfoPanelLine {
                 text: text.as_ptr(),

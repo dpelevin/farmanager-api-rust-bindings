@@ -698,9 +698,10 @@ impl Plugin {
             }
         };
 
+        let types: Vec<String> = value.iter().map(|s| s.to_string_lossy()).collect();
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK,
                        None,
-                       basic::MessageItems::AllInOne(WideString::from(format!("\nColumn types: {:?}", &value))),
+                       basic::MessageItems::AllInOne(WideString::from(format!("\nColumn types: {:?}", &types))),
                        0);
     }
 
@@ -932,7 +933,7 @@ impl Plugin {
 
         match input {
             Some(dir) => {
-                let _ = panel::control::set_panel_directory(panel::Panel::Active, self.guid, dir.to_string_lossy(), "".to_string());
+                let _ = panel::control::set_panel_directory(panel::Panel::Active, self.guid, dir, WideString::new());
             },
             None => {},
         }
@@ -1063,7 +1064,7 @@ impl Plugin {
 
         match input {
             Some(text) => {
-                let _ = panel::control::insert_cmd_line(panel::Panel::Active, text.to_string_lossy());
+                let _ = panel::control::insert_cmd_line(panel::Panel::Active, text);
             },
             None => {},
         }
@@ -1080,7 +1081,7 @@ impl Plugin {
 
         match input {
             Some(text) => {
-                let _ = panel::control::set_cmd_line(panel::Panel::Active, text.to_string_lossy());
+                let _ = panel::control::set_cmd_line(panel::Panel::Active, text);
             },
             None => {},
         }
@@ -1533,8 +1534,8 @@ impl panel::ExportFunctions for Plugin {
         if !self.panels.contains_key(&handle) {
             let root: PathBuf = dirs::home_dir().unwrap();
             let drive_path: PathBuf = root.clone();
-            let cur_dir = String::from(root.clone().canonicalize().unwrap().to_str().unwrap());
-            let panel_title = format!("rust:{}", &cur_dir);
+            let cur_dir = WideString::from(root.clone().canonicalize().unwrap().to_str().unwrap());
+            let panel_title = WideString::from(format!("rust:{}", &cur_dir));
 
             self.panels.insert(handle, PanelState {
                 root,
@@ -1546,16 +1547,16 @@ impl panel::ExportFunctions for Plugin {
                     format: None,
                     panel_title,
                     info_lines: vec!(panel::InfoPanelLine{
-                        text: basic::get_msg(&Lng::PanelMessageLine1).to_string_lossy(),
-                        data: basic::get_msg(&Lng::PanelMessageData1).to_string_lossy(),
+                        text: basic::get_msg(&Lng::PanelMessageLine1),
+                        data: basic::get_msg(&Lng::PanelMessageData1),
                         flags: panel::INFOPANELLINE_FLAGS::IPLFLAGS_NONE,
                     },panel::InfoPanelLine{
-                        text: basic::get_msg(&Lng::PanelMessageSeparator1).to_string_lossy(),
-                        data: "".to_string(),
+                        text: basic::get_msg(&Lng::PanelMessageSeparator1),
+                        data: WideString::new(),
                         flags: panel::INFOPANELLINE_FLAGS::IPLFLAGS_SEPARATOR,
                     },panel::InfoPanelLine{
-                        text: basic::get_msg(&Lng::PanelMessageLine2).to_string_lossy(),
-                        data: basic::get_msg(&Lng::PanelMessageData2).to_string_lossy(),
+                        text: basic::get_msg(&Lng::PanelMessageLine2),
+                        data: basic::get_msg(&Lng::PanelMessageData2),
                         flags: panel::INFOPANELLINE_FLAGS::IPLFLAGS_NONE,
                     }),
                     descr_files: None,
@@ -1577,8 +1578,8 @@ impl panel::ExportFunctions for Plugin {
 
         let state: &mut PanelState = self.panels.get_mut(&handle).unwrap();
 
-        let cur_dir = String::from(state.current_path().to_str().unwrap());
-        let panel_title = format!("rust:{}", &cur_dir);
+        let cur_dir = WideString::from(state.current_path().to_str().unwrap());
+        let panel_title = WideString::from(format!("rust:{}", &cur_dir));
 
         state.open_panel_info.cur_dir = cur_dir;
         state.open_panel_info.panel_title = panel_title;
@@ -1610,9 +1611,9 @@ impl panel::ExportFunctions for Plugin {
                                 change_time: filetime_from_u64(last_write_time),
                                 file_size: metadata.len(),
                                 allocation_size: 0,
-                                file_name: String::from(f.file_name().to_str().unwrap_or("<no_file_name>")),
+                                file_name: WideString::from(f.file_name().to_str().unwrap_or("<no_file_name>")),
                                 alternate_file_name: None,
-                                description: Some(format!("Description for file '{}'", f.file_name().to_str().unwrap_or("<no_file_name>"))),
+                                description: Some(WideString::from(format!("Description for file '{}'", f.file_name().to_str().unwrap_or("<no_file_name>")))),
                                 owner: None,
                                 flags: panel::PLUGINPANELITEMFLAGS::PPIF_PROCESSDESCR,
                                 file_attributes,
@@ -1639,7 +1640,7 @@ impl panel::ExportFunctions for Plugin {
                                 },
                                 file_size: 0,
                                 allocation_size: 0,
-                                file_name: String::from(f.file_name().to_str().unwrap_or("<no_file_name>")),
+                                file_name: WideString::from(f.file_name().to_str().unwrap_or("<no_file_name>")),
                                 alternate_file_name: None,
                                 description: None,
                                 owner: None,
@@ -1661,7 +1662,7 @@ impl panel::ExportFunctions for Plugin {
     }
 
     fn compare(&mut self, info: panel::CompareInfo) -> Option<Ordering> {
-        Some(info.item1.file_name.cmp(&info.item2.file_name))
+        Some(info.item1.file_name.to_string_lossy().cmp(&info.item2.file_name.to_string_lossy()))
     }
 
     fn delete_files(&mut self, info: panel::DeleteFilesInfo) -> Result<()> {
@@ -1671,7 +1672,7 @@ impl panel::ExportFunctions for Plugin {
 
         for item in &info.panel_items {
             let mut file_path = PathBuf::from(&current_path);
-            file_path.push(&item.file_name);
+            file_path.push(&item.file_name.to_string_lossy());
             trace!("removing file '{}' with size {}", &file_path.to_str().unwrap(), &item.file_size);
             let path = file_path.as_path();
             if path.is_file() {
@@ -1691,11 +1692,11 @@ impl panel::ExportFunctions for Plugin {
         trace!("<free_find_data()");
     }
 
-    fn set_directory(&mut self, handle: HANDLE, path: &String) -> Result<()> {
+    fn set_directory(&mut self, handle: HANDLE, path: &WideString) -> Result<()> {
         trace!(">set_directory()");
         let state: &mut PanelState = self.panels.get_mut(&handle).unwrap();
-        let new_path = PathBuf::from(path);
-        trace!("New path: {:?}", path);
+        let new_path = PathBuf::from(path.to_string_lossy());
+        trace!("New path: {:?}", &path.to_string_lossy());
         state.apply_path_segment(new_path);
         trace!("Resolved path: {:?}", state.current_path());
         trace!("<set_directory()");
@@ -1710,9 +1711,9 @@ impl panel::ExportFunctions for Plugin {
         for item in &info.panel_items {
             trace!("file: {}", item.file_name);
             let mut from = current_path.clone();
-            from.push(&item.file_name);
-            let mut to = PathBuf::from(&info.dest_path);
-            to.push(&item.file_name);
+            from.push(&item.file_name.to_string_lossy());
+            let mut to = PathBuf::from(&info.dest_path.to_string_lossy());
+            to.push(&item.file_name.to_string_lossy());
 
             if !info.move_file {
                 trace!("copy: '{}' '{}'", from.to_str().unwrap(), to.to_str().unwrap());
@@ -1803,10 +1804,10 @@ impl panel::ExportFunctions for Plugin {
 
         for item in &info.panel_item {
             trace!("|put_files_info() item: {}, ", &item.file_name);
-            let mut src_file_path = PathBuf::from(&info.src_path);
-            src_file_path.push(&item.file_name);
+            let mut src_file_path = PathBuf::from(&info.src_path.to_string_lossy());
+            src_file_path.push(&item.file_name.to_string_lossy());
             let mut dst_file_path = PathBuf::from(&current_path);
-            dst_file_path.push(&item.file_name);
+            dst_file_path.push(&item.file_name.to_string_lossy());
             if info.move_file {
                 let _ = fs::rename(&src_file_path, &dst_file_path);
             } else {

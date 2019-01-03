@@ -71,7 +71,7 @@ pub trait ExportFunctions {
     }
     fn delete_files(&mut self, info: DeleteFilesInfo) -> Result<()>;
     fn free_find_data(&mut self, handle: crate::HANDLE);
-    fn set_directory(&mut self, handle: crate::HANDLE, path: &String) -> Result<()>;
+    fn set_directory(&mut self, handle: crate::HANDLE, path: &WideString) -> Result<()>;
     #[allow(unused_variables)]
     fn get_files(&mut self, info: &mut GetFilesInfo) -> Result<ReturnCode> {
         Ok(ReturnCode::UserCancel)
@@ -104,7 +104,7 @@ pub trait ExportFunctions {
 
 pub struct AnalyseInfo<'a>
 {
-    pub file_name: String,
+    pub file_name: WideString,
     pub buffer: &'a [u8],
     pub op_mode: OPERATION_MODES
 }
@@ -115,17 +115,17 @@ pub struct CloseAnalyseInfo
 }
 
 pub struct FarPanelDirectory {
-    pub name: String,
+    pub name: WideString,
     pub plugin_id: crate::GUID,
-    pub file: String,
+    pub file: WideString,
 }
 
 impl From<&ffi::FarPanelDirectory> for FarPanelDirectory {
     fn from(src: &ffi::FarPanelDirectory) -> Self {
         FarPanelDirectory {
-            name: unsafe { WideString::from_ptr_str(src.name) }.to_string_lossy(),
+            name: unsafe { WideString::from_ptr_str(src.name) },
             plugin_id: src.plugin_id,
-            file: unsafe { WideString::from_ptr_str(src.file) }.to_string_lossy(),
+            file: unsafe { WideString::from_ptr_str(src.file) },
         }
     }
 }
@@ -142,10 +142,10 @@ pub struct PluginPanelItem {
     pub change_time: FILETIME,
     pub file_size: u64,
     pub allocation_size: u64,
-    pub file_name: String,
-    pub alternate_file_name: Option<String>,
-    pub description: Option<String>,
-    pub owner: Option<String>,
+    pub file_name: WideString,
+    pub alternate_file_name: Option<WideString>,
+    pub description: Option<WideString>,
+    pub owner: Option<WideString>,
     pub flags: PLUGINPANELITEMFLAGS,
     pub file_attributes: FILE_ATTRIBUTES,
     pub number_of_links: usize,
@@ -174,19 +174,19 @@ impl From<&ffi::PluginPanelItem> for PluginPanelItem {
             change_time: ppi.change_time,
             file_size: ppi.file_size,
             allocation_size: ppi.allocation_size,
-            file_name: unsafe { WideString::from_ptr_str(ppi.file_name) }.to_string_lossy(),
+            file_name: unsafe { WideString::from_ptr_str(ppi.file_name) },
             alternate_file_name: if ppi.alternate_file_name != ptr::null() {
-                Some(unsafe { WideString::from_ptr_str(ppi.alternate_file_name) }.to_string_lossy())
+                Some(unsafe { WideString::from_ptr_str(ppi.alternate_file_name) })
             } else {
                 None
             },
             description: if ppi.description != ptr::null() {
-                Some(unsafe { WideString::from_ptr_str(ppi.description) }.to_string_lossy())
+                Some(unsafe { WideString::from_ptr_str(ppi.description) })
             } else {
                 None
             },
             owner: if ppi.owner != ptr::null() {
-                Some(unsafe { WideString::from_ptr_str(ppi.owner) }.to_string_lossy())
+                Some(unsafe { WideString::from_ptr_str(ppi.owner) })
             } else {
                 None
             },
@@ -227,8 +227,8 @@ bitflags! {
 }
 
 pub struct InfoPanelLine {
-    pub text: String,
-    pub data: String,
+    pub text: WideString,
+    pub data: WideString,
     pub flags: INFOPANELLINE_FLAGS
 }
 
@@ -250,7 +250,7 @@ pub struct GetFilesInfo {
     pub panel_items: Vec<PluginPanelItem>,
     pub items_number: usize,
     pub move_file: bool,
-    pub dest_path: String,
+    pub dest_path: WideString,
     pub op_mode: OPERATION_MODES,
 }
 
@@ -261,34 +261,34 @@ pub enum OPENPANELINFO_SORTORDERS {
 }
 
 pub struct PanelMode {
-    pub column_types: String,
-    pub column_widths: String,
-    pub column_titles: Vec<String>,
-    pub status_column_types: String,
-    pub status_column_widths: String,
+    pub column_types: WideString,
+    pub column_widths: WideString,
+    pub column_titles: Vec<WideString>,
+    pub status_column_types: WideString,
+    pub status_column_widths: WideString,
     pub flags: PANELMODE_FLAGS,
 }
 
 pub struct KeyBarLabel {
     pub key: crate::basic::FarKey,
-    pub text: String,
-    pub long_text: String
+    pub text: WideString,
+    pub long_text: WideString
 }
 
 pub struct OpenPanelInfo {
     pub flags: OPENPANELINFO_FLAGS,
-    pub host_file: Option<String>,
-    pub cur_dir: String,
-    pub format: Option<String>,
-    pub panel_title: String,
+    pub host_file: Option<WideString>,
+    pub cur_dir: WideString,
+    pub format: Option<WideString>,
+    pub panel_title: WideString,
     pub info_lines: Vec<InfoPanelLine>,
-    pub descr_files: Option<Vec<String>>,
+    pub descr_files: Option<Vec<WideString>>,
     pub panel_modes_array: Vec<PanelMode>,
     pub start_panel_mode: usize,
     pub start_sort_mode: OPENPANELINFO_SORTMODES,
     pub start_sort_order: OPENPANELINFO_SORTORDERS,
     pub key_bar: Option<Vec<KeyBarLabel>>,
-    pub shortcut_data: Option<String>,
+    pub shortcut_data: Option<WideString>,
     pub free_size: u64
 }
 
@@ -299,12 +299,12 @@ pub struct MakeDirectoryInfo {
 }
 
 pub enum PanelEvent {
-    ChangeViewMode(String),
+    ChangeViewMode(WideString),
     Redraw,
     Idle,
     Close,
     Break(ffi::DWORD),
-    Command(String),
+    Command(WideString),
     GotFocus,
     KillFocus,
     ChangeSortParams,
@@ -320,12 +320,12 @@ impl From<&ffi::ProcessPanelEventInfo> for ProcessPanelEventInfo {
     fn from(info: &ffi::ProcessPanelEventInfo) -> Self {
         ProcessPanelEventInfo {
             event: match info.event {
-                ffi::FAR_EVENTS::FE_CHANGEVIEWMODE => PanelEvent::ChangeViewMode(unsafe { WideString::from_ptr_str(info.param as *const ffi::wchar_t) }.to_string_lossy()),
+                ffi::FAR_EVENTS::FE_CHANGEVIEWMODE => PanelEvent::ChangeViewMode(unsafe { WideString::from_ptr_str(info.param as *const ffi::wchar_t) }),
                 ffi::FAR_EVENTS::FE_REDRAW => PanelEvent::Redraw,
                 ffi::FAR_EVENTS::FE_IDLE => PanelEvent::Idle,
                 ffi::FAR_EVENTS::FE_CLOSE => PanelEvent::Close,
                 ffi::FAR_EVENTS::FE_BREAK => PanelEvent::Break(info.param as ffi::DWORD),
-                ffi::FAR_EVENTS::FE_COMMAND => PanelEvent::Command(unsafe { WideString::from_ptr_str(info.param as *const ffi::wchar_t) }.to_string_lossy()),
+                ffi::FAR_EVENTS::FE_COMMAND => PanelEvent::Command(unsafe { WideString::from_ptr_str(info.param as *const ffi::wchar_t) }),
                 ffi::FAR_EVENTS::FE_GOTFOCUS => PanelEvent::GotFocus,
                 ffi::FAR_EVENTS::FE_KILLFOCUS => PanelEvent::KillFocus,
                 ffi::FAR_EVENTS::FE_CHANGESORTPARAMS => PanelEvent::ChangeSortParams,
@@ -377,7 +377,7 @@ pub struct PutFilesInfo {
     pub panel: crate::HANDLE,
     pub panel_item: Vec<PluginPanelItem>,
     pub move_file: bool,
-    pub src_path: String,
+    pub src_path: WideString,
     pub op_mode: OPERATION_MODES
 }
 
@@ -399,7 +399,7 @@ impl From<&ffi::PutFilesInfo> for PutFilesInfo {
                     _ => true
                 }
             },
-            src_path: unsafe { WideString::from_ptr_str(info.src_path) }.to_string_lossy(),
+            src_path: unsafe { WideString::from_ptr_str(info.src_path) },
             op_mode: info.op_mode,
         }
     }
@@ -510,7 +510,7 @@ pub extern "system" fn analyse(info: *const ffi::AnalyseInfo) -> crate::HANDLE {
             let buffer = unsafe { slice::from_raw_parts(info_ref.buffer as *const u8, info_ref.buffer_size) };
             match plugin.panel_exports() {
                 Some(exports) => exports.analyse(AnalyseInfo {
-                    file_name: unsafe { WideString::from_ptr_str(info_ref.file_name) }.to_string_lossy(),
+                    file_name: unsafe { WideString::from_ptr_str(info_ref.file_name) },
                     buffer,
                     op_mode: info_ref.op_mode,
                 }),
@@ -764,19 +764,19 @@ pub extern fn get_files(info: *mut ffi::GetFilesInfo) -> libc::intptr_t {
                 change_time: item.change_time,
                 file_size: item.file_size,
                 allocation_size: item.allocation_size,
-                file_name: unsafe { WideString::from_ptr_str(item.file_name) }.to_string_lossy(),
+                file_name: unsafe { WideString::from_ptr_str(item.file_name) },
                 alternate_file_name: if item.alternate_file_name != ptr::null() {
-                    Some(unsafe { WideString::from_ptr_str(item.alternate_file_name) }.to_string_lossy())
+                    Some(unsafe { WideString::from_ptr_str(item.alternate_file_name) })
                 } else {
                     None
                 },
                 description: if item.description != ptr::null() {
-                    Some(unsafe { WideString::from_ptr_str(item.description) }.to_string_lossy())
+                    Some(unsafe { WideString::from_ptr_str(item.description) })
                 } else {
                     None
                 },
                 owner: if item.owner != ptr::null() {
-                    Some(unsafe { WideString::from_ptr_str(item.owner) }.to_string_lossy())
+                    Some(unsafe { WideString::from_ptr_str(item.owner) })
                 } else {
                     None
                 },
@@ -797,7 +797,7 @@ pub extern fn get_files(info: *mut ffi::GetFilesInfo) -> libc::intptr_t {
             panel_items: items,
             items_number: info_ref.items_number,
             move_file: info_ref.move_file != 0,
-            dest_path: unsafe { WideString::from_ptr_str(info_ref.dest_path) }.to_string_lossy(),
+            dest_path: unsafe { WideString::from_ptr_str(info_ref.dest_path) },
             op_mode: info_ref.op_mode,
         };
 
@@ -1003,7 +1003,7 @@ pub extern "system" fn set_directory(info: *const ffi::SetDirectoryInfo) -> libc
         let mut result: libc::intptr_t = 0;
 
         let handle = info_ref.h_panel;
-        let path: String = unsafe { WideString::from_ptr_str(info_ref.dir) }.to_string_lossy();
+        let path: WideString = unsafe { WideString::from_ptr_str(info_ref.dir) };
         let set_directory_result = plugin(|plugin: &mut dyn FarPlugin| {
             match plugin.panel_exports() {
                 Some(exports) => exports.set_directory(handle, &path),
@@ -1012,7 +1012,7 @@ pub extern "system" fn set_directory(info: *const ffi::SetDirectoryInfo) -> libc
         });
         match set_directory_result {
             Ok(_) => {
-                context(|ctx: &mut ctx::Context| ctx.panel(handle).set_current_directory(&path));
+                context(|ctx: &mut ctx::Context| ctx.panel(handle).set_current_directory(path));
                 result = 1
             },
             Err(_) => {}
@@ -1056,14 +1056,13 @@ pub extern "system" fn set_find_list(info: *const ffi::SetFindListInfo) -> libc:
     return r_val;
 }
 
-pub fn get_dir_list(dir: &str) -> crate::Result<Vec<PluginPanelItem>> {
+pub fn get_dir_list(dir: WideString) -> crate::Result<Vec<PluginPanelItem>> {
     trace!(">get_dir_list()");
     let result: crate::Result<Vec<PluginPanelItem>> = far_api(|far_api: &mut ffi::PluginStartupInfo| {
         let mut panel_items: *mut ffi::PluginPanelItem = ptr::null_mut();
         let mut items_number: libc::size_t = 0;
 
-        let dir_ws: WideString = WideString::from(dir);
-        let return_code = far_api.get_dir_list(dir_ws.as_ptr(), &mut panel_items, &mut items_number);
+        let return_code = far_api.get_dir_list(dir.as_ptr(), &mut panel_items, &mut items_number);
 
         if return_code == 0 {
             return Err(format_err!(""));
@@ -1084,14 +1083,13 @@ pub fn get_dir_list(dir: &str) -> crate::Result<Vec<PluginPanelItem>> {
     return result;
 }
 
-pub fn get_plugin_dir_list(plugin_id: ffi::GUID, h_panel: ffi::HANDLE, dir: &str) -> Result<Vec<PluginPanelItem>> {
+pub fn get_plugin_dir_list(plugin_id: ffi::GUID, h_panel: ffi::HANDLE, dir: WideString) -> Result<Vec<PluginPanelItem>> {
     trace!(">get_plugin_dir_list()");
     let result: crate::Result<Vec<PluginPanelItem>> = far_api(|far_api: &mut ffi::PluginStartupInfo| {
         let mut panel_items: *mut ffi::PluginPanelItem = ptr::null_mut();
         let mut items_number: libc::size_t = 0;
 
-        let dir_ws: WideString = WideString::from(dir);
-        let return_code = far_api.get_plugin_dir_list(&plugin_id, h_panel,dir_ws.as_ptr(), &mut panel_items, &mut items_number);
+        let return_code = far_api.get_plugin_dir_list(&plugin_id, h_panel,dir.as_ptr(), &mut panel_items, &mut items_number);
 
         if return_code == 0 {
             return Err(format_err!(""));

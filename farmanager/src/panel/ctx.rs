@@ -59,8 +59,8 @@ impl Default for Panel {
 impl Panel {
 
     #[allow(dead_code)]
-    pub(super) fn set_current_directory(&mut self, dir: &str) {
-        self.open_panel_info.cur_dir = WideString::from(dir);
+    pub(super) fn set_current_directory(&mut self, dir: WideString) {
+        self.open_panel_info.cur_dir = dir;
     }
 
 }
@@ -111,22 +111,22 @@ impl Enrichable<Context, (ffi::HANDLE, &crate::panel::OpenPanelInfo)> for ffi::O
         let panel: &mut Panel = ctx.panel(h_panel);
 
         panel.open_panel_info.inner.flags = src.flags;
-        panel.open_panel_info.host_file = src.host_file.as_ref().map(|s| WideString::from(s.as_str()));
+        panel.open_panel_info.host_file = src.host_file.as_ref().map(|s| s.clone());
         panel.open_panel_info.inner.host_file = match panel.open_panel_info.host_file {
             Some(ref file) => file.as_ptr(),
             None => ptr::null()
         };
 
-        panel.open_panel_info.cur_dir = WideString::from(src.cur_dir.as_str());
+        panel.open_panel_info.cur_dir = src.cur_dir.clone();
         panel.open_panel_info.inner.cur_dir = panel.open_panel_info.cur_dir.as_ptr();
 
-        panel.open_panel_info.format = src.format.as_ref().map(|s| WideString::from(s.as_str()));
+        panel.open_panel_info.format = src.format.as_ref().map(|s| s.clone());
         panel.open_panel_info.inner.format = match panel.open_panel_info.format {
             Some(ref file) => file.as_ptr(),
             None => ptr::null()
         };
 
-        panel.open_panel_info.panel_title = WideString::from(src.panel_title.as_str());
+        panel.open_panel_info.panel_title = src.panel_title.clone();
         panel.open_panel_info.inner.panel_title = panel.open_panel_info.panel_title.as_ptr();
 
         let info_lines: Vec<wrp::InfoPanelLine> = src.info_lines.iter().map(wrp::InfoPanelLine::from).collect();
@@ -134,7 +134,7 @@ impl Enrichable<Context, (ffi::HANDLE, &crate::panel::OpenPanelInfo)> for ffi::O
         panel.open_panel_info.inner.info_lines = panel.open_panel_info.info_lines.as_ptr();
         panel.open_panel_info.inner.info_lines_number = panel.open_panel_info.info_lines.len();
 
-        panel.open_panel_info.descr_files = src.descr_files.as_ref().map(|descr_files| WideStringArray::from(descr_files.as_slice()));
+        panel.open_panel_info.descr_files = src.descr_files.clone() .as_ref().map(|descr_files| WideStringArray::from(descr_files.as_slice()));
         panel.open_panel_info.inner.descr_files = match &panel.open_panel_info.descr_files {
             Some(descr_files) => descr_files.as_ptr(),
             None => ptr::null(),

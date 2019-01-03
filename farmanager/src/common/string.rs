@@ -143,6 +143,22 @@ impl From<Vec<WideString>> for WideStringArray {
     }
 }
 
+impl From<&[WideString]> for WideStringArray {
+    fn from(s: &[WideString]) -> Self {
+        let len = s.len();
+        let buf: Box<[WideString]> = s.iter().map(|s: &WideString| s.clone())
+            .collect::<Vec<WideString>>().into_boxed_slice();
+        let ptrs: Box<[*const ffi::wchar_t]> = buf.iter().map(|s: &WideString| s.as_ptr())
+            .collect::<Vec<*const ffi::wchar_t>>().into_boxed_slice();
+
+        WideStringArray {
+            buf,
+            ptrs,
+            len,
+        }
+    }
+}
+
 impl From<&[String]> for WideStringArray {
     fn from(s: &[String]) -> Self {
         let len = s.len();

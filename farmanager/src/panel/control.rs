@@ -45,13 +45,12 @@ pub fn is_active_panel(panel: Panel) -> bool {
     return result;
 }
 
-pub fn close_panel(panel: Panel, path: Option<String>) {
+pub fn close_panel(panel: Panel, path: Option<WideString>) {
     trace!(">close_panel");
     far_api(|far_api: &mut ffi::PluginStartupInfo| {
         let h_panel: ffi::HANDLE = panel.into();
-        let path_ws = path.map(|p| WideString::from(p.as_str()));
         let param1: libc::intptr_t = 0;
-        let param2: *const u16 = match path_ws {
+        let param2: *const u16 = match path {
             None => ptr::null(),
             Some(path) => path.as_ptr(),
         };
@@ -115,7 +114,7 @@ pub fn get_panel_info(panel: Panel) -> crate::Result<PanelInfo> {
     return result;
 }
 
-pub fn get_column_types(panel: Panel) -> crate::Result<Vec<String>> {
+pub fn get_column_types(panel: Panel) -> crate::Result<Vec<WideString>> {
     trace!(">get_column_types");
     let result = far_api(|far_api: &mut ffi::PluginStartupInfo| {
         let h_panel = panel.into();
@@ -143,7 +142,7 @@ pub fn get_column_types(panel: Panel) -> crate::Result<Vec<String>> {
             0 => Err(format_err!("")),
             _ => {
                 let result = WideString::from(buf.as_slice()).to_string_lossy()
-                    .split(',').map(|w| w.to_string()).collect();
+                    .split(',').map(|s| WideString::from(s)).collect();
                 Ok(result)
             }
         }
@@ -225,7 +224,7 @@ pub fn get_panel_directory(panel: Panel) -> crate::Result<FarPanelDirectory> {
     return result;
 }
 
-pub fn get_panel_format(panel: Panel) -> crate::Result<String> {
+pub fn get_panel_format(panel: Panel) -> crate::Result<WideString> {
     trace!(">get_panel_format");
     let result = far_api(|far_api: &mut ffi::PluginStartupInfo| {
         let h_panel = panel.into();
@@ -253,7 +252,7 @@ pub fn get_panel_format(panel: Panel) -> crate::Result<String> {
             0 => Err(format_err!("")),
             _ => {
                 let result = WideString::from(buf.as_slice());
-                Ok(result.to_string_lossy())
+                Ok(result)
             }
         }
     });
@@ -261,7 +260,7 @@ pub fn get_panel_format(panel: Panel) -> crate::Result<String> {
     return result;
 }
 
-pub fn get_panel_host_file(panel: Panel) -> crate::Result<String> {
+pub fn get_panel_host_file(panel: Panel) -> crate::Result<WideString> {
     trace!(">get_panel_host_file");
     let result = far_api(|far_api: &mut ffi::PluginStartupInfo| {
         let h_panel = panel.into();
@@ -289,7 +288,7 @@ pub fn get_panel_host_file(panel: Panel) -> crate::Result<String> {
             0 => Err(format_err!("")),
             _ => {
                 let result = WideString::from(buf.as_slice());
-                Ok(result.to_string_lossy())
+                Ok(result)
             }
         }
     });
@@ -335,7 +334,7 @@ pub fn get_panel_item(panel: Panel, item_index: usize) -> crate::Result<PluginPa
     return result;
 }
 
-pub fn get_panel_prefix(panel: Panel) -> crate::Result<String> {
+pub fn get_panel_prefix(panel: Panel) -> crate::Result<WideString> {
     trace!(">get_panel_prefix");
     let result = far_api(|far_api: &mut ffi::PluginStartupInfo| {
         let h_panel = panel.into();
@@ -363,7 +362,7 @@ pub fn get_panel_prefix(panel: Panel) -> crate::Result<String> {
             0 => Err(format_err!("")),
             _ => {
                 let result = WideString::from(buf.as_slice());
-                Ok(result.to_string_lossy())
+                Ok(result)
             }
         }
     });
@@ -498,19 +497,17 @@ pub fn set_active_panel(panel: Panel) -> bool {
     return result;
 }
 
-pub fn set_panel_directory(panel: Panel, guid: ffi::GUID, path: String, host_file: String) -> crate::Result<()> {
+pub fn set_panel_directory(panel: Panel, guid: ffi::GUID, path: WideString, host_file: WideString) -> crate::Result<()> {
     trace!(">set_panel_directory");
     let result = far_api(|far_api: &mut ffi::PluginStartupInfo| {
         let h_panel = panel.into();
-        let path_ws = WideString::from(path);
-        let param_ws = WideString::from("");
-        let host_file_ws = WideString::from(host_file);
+        let param = WideString::from("");
         let mut far_panel_directory: ffi::FarPanelDirectory = ffi::FarPanelDirectory {
             struct_size: mem::size_of::<ffi::FarPanelDirectory>(),
-            name: path_ws.as_ptr(),
-            param: param_ws.as_ptr(),
+            name: path.as_ptr(),
+            param: param.as_ptr(),
             plugin_id: guid,
-            file: host_file_ws.as_ptr(),
+            file: host_file.as_ptr(),
         };
 
         let param1: libc::intptr_t = 0;
@@ -614,9 +611,6 @@ pub fn set_sort_order(panel: Panel, sort_order: OPENPANELINFO_SORTORDERS) {
 
 pub fn set_view_mode(panel: Panel, view_mode: isize) {
     trace!(">set_view_mode");
-//    if view_mode < 0 || view_mode > 9 {
-//        return;
-//    }
     far_api(|far_api: &mut ffi::PluginStartupInfo| {
         let param1: libc::intptr_t = view_mode;
         let param2: *mut libc::c_void = ptr::null_mut();
@@ -660,7 +654,7 @@ pub fn set_directories_first(panel: Panel, directories_first: bool) {
     trace!("<set_directories_first");
 }
 
-pub fn get_cmd_line(panel: Panel) -> crate::Result<String> {
+pub fn get_cmd_line(panel: Panel) -> crate::Result<WideString> {
     trace!(">get_cmd_line");
     let result = far_api(|far_api: &mut ffi::PluginStartupInfo| {
         let h_panel = panel.into();
@@ -683,7 +677,7 @@ pub fn get_cmd_line(panel: Panel) -> crate::Result<String> {
             0 => Err(format_err!("")),
             _ => {
                 let result = WideString::from(buf.as_slice());
-                Ok(result.to_string_lossy())
+                Ok(result)
             }
         }
     });
@@ -743,13 +737,12 @@ pub fn get_cmd_line_selection(panel: Panel) -> crate::Result<(isize, isize)> {
     return result;
 }
 
-pub fn insert_cmd_line(panel: Panel, text: String) -> crate::Result<()> {
+pub fn insert_cmd_line(panel: Panel, text: WideString) -> crate::Result<()> {
     trace!(">insert_cmd_line");
     let result = far_api(|far_api: &mut ffi::PluginStartupInfo| {
-        let text_ws = WideString::from(text);
         let h_panel = panel.into();
         let param1: libc::intptr_t = 0;
-        let param2 = text_ws.as_ptr() as *mut libc::c_void;
+        let param2 = text.as_ptr() as *mut libc::c_void;
 
         let r = far_api.panel_control(h_panel,
                                       ffi::FILE_CONTROL_COMMANDS::FCTL_INSERTCMDLINE,
@@ -766,13 +759,12 @@ pub fn insert_cmd_line(panel: Panel, text: String) -> crate::Result<()> {
     return result;
 }
 
-pub fn set_cmd_line(panel: Panel, text: String) -> crate::Result<()> {
+pub fn set_cmd_line(panel: Panel, text: WideString) -> crate::Result<()> {
     trace!(">set_cmd_line");
     let result = far_api(|far_api: &mut ffi::PluginStartupInfo| {
-        let text_ws = WideString::from(text);
         let h_panel = panel.into();
         let param1: libc::intptr_t = 0;
-        let param2 = text_ws.as_ptr() as *mut libc::c_void;
+        let param2 = text.as_ptr() as *mut libc::c_void;
 
         let r = far_api.panel_control(h_panel,
                                       ffi::FILE_CONTROL_COMMANDS::FCTL_SETCMDLINE,

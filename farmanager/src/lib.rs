@@ -27,6 +27,7 @@ pub mod plugin_manager;
 pub mod settings;
 pub mod viewer;
 
+pub type WideString = common::string::WideString;
 pub type Result<T> = result::Result<T, crate::Error>;
 
 thread_local! {
@@ -129,11 +130,17 @@ fn handle_panic(payload: &(dyn std::any::Any + Send)) {
     let line: String;
 
     match payload.downcast_ref::<&str>() {
-        Some(text) => { line = text.to_string(); },
+        Some(text) => {
+            line = text.to_string();
+        },
         _ => {
             match payload.downcast_ref::<String>() {
-                Some(text) => { line = text.to_string(); },
-                None => { line = "Oups! Something went wrong.".to_string(); }
+                Some(text) => {
+                    line = text.to_string();
+                },
+                None => {
+                    line = "Oups! Something went wrong.".to_string();
+                }
             }
         }
     }

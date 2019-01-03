@@ -13,7 +13,6 @@ use super::wrapper as wrp;
 #[allow(dead_code)]
 pub struct Panel {
     pub(super) open_panel_info: wrp::OpenPanelInfo,
-    pub(super) make_directory_name: Option<WideString>,
 }
 
 impl Default for Panel {
@@ -53,7 +52,6 @@ impl Default for Panel {
                 info_lines: Array::new(),
                 descr_files: None,
             },
-            make_directory_name: None,
         }
     }
 }

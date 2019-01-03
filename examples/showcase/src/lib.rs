@@ -20,6 +20,7 @@ use farmanager::*;
 use farmanager::FarPlugin;
 
 use crate::lng::Lng;
+use std::rc::Rc;
 
 mod lng;
 
@@ -28,6 +29,7 @@ struct PanelState {
     path: PathBuf,
     open_panel_info: panel::OpenPanelInfo,
     panel_items: Option<panel::PluginPanelItems>,
+    make_directory_name: Option<Rc<WideString>>,
 }
 
 impl PanelState {
@@ -1568,7 +1570,8 @@ impl panel::ExportFunctions for Plugin {
                         Err(_) => 0
                     }
                 },
-                panel_items: None
+                panel_items: None,
+                make_directory_name: None
             });
         }
 
@@ -1734,7 +1737,9 @@ impl panel::ExportFunctions for Plugin {
         let state: &mut PanelState = self.panels.get_mut(&info.panel).unwrap();
         let current_path = state.current_path();
 
-        trace!("directory: '{}', silent: {}", &info.name, &info.op_mode.contains(panel::OPERATION_MODES::OPM_SILENT));
+        if let Some(name) = info.name.upgrade() {
+            trace!("directory: '{}', silent: {}", &name, &info.op_mode.contains(panel::OPERATION_MODES::OPM_SILENT));
+        }
         let mut directory_path = PathBuf::from(&current_path);
 
         let result: Result<ReturnCode>;
@@ -1750,20 +1755,28 @@ impl panel::ExportFunctions for Plugin {
 
             match input {
                 Some(name) => {
-                    info.name = name;
+                    state.make_directory_name = Some(Rc::from(WideString::from(name)));
+                    info.name = Rc::downgrade(state.make_directory_name.as_ref().unwrap());
                 },
                 None => cancelled = true
             }
         }
 
         result = if !cancelled {
-            directory_path.push(&info.name);
-            match fs::create_dir(&directory_path) {
-                Ok(_, ) => Ok(panel::ReturnCode::Success),
-                Err(e) => {
-                    trace!("|make_directory(): {}", e);
-                    Err(e.into())
-                }
+            match info.name.upgrade() {
+                Some(name) => {
+                    directory_path.push(name.to_string_lossy());
+                    match fs::create_dir(&directory_path) {
+                        Ok(_, ) => {
+                            Ok(panel::ReturnCode::Success)
+                        },
+                        Err(e) => {
+                            trace!("|make_directory(): {}", e);
+                            Err(e.into())
+                        }
+                    }
+                },
+                None => unimplemented!(),
             }
         } else {
             Ok(panel::ReturnCode::UserCancel)

@@ -36,6 +36,8 @@ use crate::Result;
 pub use crate::ReturnCode as ReturnCode;
 
 use self::wrapper as wrp;
+use std::rc::Rc;
+use std::rc::Weak;
 
 mod ctx;
 mod wrapper;
@@ -292,28 +294,8 @@ pub struct OpenPanelInfo {
 
 pub struct MakeDirectoryInfo {
     pub panel: crate::HANDLE,
-    pub name: String,
+    pub name: Weak<WideString>,
     pub op_mode: OPERATION_MODES
-}
-
-impl From<ffi::MakeDirectoryInfo> for MakeDirectoryInfo {
-    fn from(info: ffi::MakeDirectoryInfo) -> Self {
-        MakeDirectoryInfo {
-            panel: info.h_panel,
-            name: unsafe { WideString::from_ptr_str(info.name) }.to_string_lossy(),
-            op_mode: info.op_mode,
-        }
-    }
-}
-
-impl From<&ffi::MakeDirectoryInfo> for MakeDirectoryInfo {
-    fn from(info: &ffi::MakeDirectoryInfo) -> Self {
-        MakeDirectoryInfo {
-            panel: info.h_panel,
-            name: unsafe { WideString::from_ptr_str(info.name) }.to_string_lossy(),
-            op_mode: info.op_mode,
-        }
-    }
 }
 
 pub enum PanelEvent {
@@ -696,45 +678,42 @@ pub extern "system" fn delete_files(info: *const ffi::DeleteFilesInfo) -> libc::
 pub extern "system" fn make_directory(info: *mut ffi::MakeDirectoryInfo) -> libc::intptr_t {
     trace!(">make_directory()");
     let call_result = panic::catch_unwind(|| {
-        context(|ctx: &mut ctx::Context| {
-            let result: libc::intptr_t;
-            let info_ref = unsafe { &mut *info };
-            assert_eq!(info_ref.struct_size, mem::size_of::<ffi::MakeDirectoryInfo>());
-            let mut dir_info = MakeDirectoryInfo::from(&*info_ref);
+        let result: libc::intptr_t;
+        let info_ref = unsafe { &mut *info };
+        assert_eq!(info_ref.struct_size, mem::size_of::<ffi::MakeDirectoryInfo>());
 
-            let panel = ctx.panel(info_ref.h_panel);
+        let dir_name_rc: Rc<WideString> = Rc::from(unsafe { WideString::from_ptr_str(info_ref.name) });
+        let mut dir_info = MakeDirectoryInfo {
+            panel: info_ref.h_panel,
+            name: Rc::downgrade(&dir_name_rc),
+            op_mode: info_ref.op_mode
+        };
 
-            let silent_mode = info_ref.op_mode.contains(OPERATION_MODES::OPM_SILENT);
+        let silent_mode = info_ref.op_mode.contains(OPERATION_MODES::OPM_SILENT);
 
-            let mut update_name = |name: &str| {
-                panel.make_directory_name = Some(WideString::from(name));
-                info_ref.name = panel.make_directory_name.as_ref().unwrap().as_ptr();
-                ReturnCode::Success as libc::intptr_t
-            };
-
-            let make_directory_result = plugin(|plugin: &mut dyn FarPlugin| {
-                match plugin.panel_exports() {
-                    Some(exports) => exports.make_directory(&mut dir_info),
-                    None => unimplemented!()
-                }
-            });
-            match make_directory_result {
-                Ok(code) => {
-                    if !silent_mode {
-                        result = update_name(&dir_info.name)
-                    } else {
-                        result = code as libc::intptr_t;
-                    }
-                },
-                Err(_) => {
-                    if !silent_mode {
-                        let _ = update_name(&dir_info.name);
-                    }
-                    result = 0
-                }
+        let make_directory_result = plugin(|plugin: &mut dyn FarPlugin| {
+            match plugin.panel_exports() {
+                Some(exports) => exports.make_directory(&mut dir_info),
+                None => unimplemented!()
             }
-            return result;
-        })
+        });
+        match make_directory_result {
+            Ok(code) => {
+                if !silent_mode {
+                    match dir_info.name.upgrade() {
+                        Some(rc) => {
+                            info_ref.name = rc.as_ptr()
+                        },
+                        None => panic!("MakeDirectoryInfo 'name' field pointer should be valid after the function call"),
+                    }
+                }
+                result = code as libc::intptr_t;
+            },
+            Err(_) => {
+                result = 0
+            }
+        }
+        return result;
     });
 
     let r_val: libc::intptr_t = match call_result {

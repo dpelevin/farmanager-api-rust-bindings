@@ -1,6 +1,10 @@
 use widestring::{WideCStr, WideCString};
 
 use crate::ffi;
+use std::fmt::Display;
+use std::fmt::Formatter;
+use std::fmt::Error;
+use core::result;
 
 pub struct WideString {
     inner: WideCString
@@ -81,6 +85,20 @@ impl From<&[ffi::wchar_t]> for WideString {
         WideString {
             inner: wcs,
         }
+    }
+}
+
+impl Clone for WideString {
+    fn clone(&self) -> Self {
+        WideString {
+            inner: self.inner.clone()
+        }
+    }
+}
+
+impl Display for WideString {
+    fn fmt(&self, f: &mut Formatter) -> result::Result<(), Error> {
+        write!(f, "{}", self.to_string_lossy().as_str())
     }
 }
 

@@ -53,7 +53,7 @@ plugin!(Plugin);
 
 struct Plugin {
     guid: GUID,
-    module_name: String,
+    module_name: WideString,
     panels: HashMap<HANDLE, PanelState>,
     #[allow(dead_code)]
     objects: Option<Vec<String>>
@@ -70,7 +70,7 @@ impl Plugin {
                 Data3: 0x43ec,
                 Data4: [0xb7, 0x87, 0x17, 0xf2, 0x9b, 0x3, 0x89, 0xaf]
             },
-            module_name: String::new(),
+            module_name: WideString::new(),
             panels: HashMap::new(),
             objects: None
         }
@@ -82,7 +82,7 @@ impl Plugin {
             Some("Showcase"), None, None, None,
             vec!(basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_SELECTED,
-                            text: String::from("Basic API"),
+                            text: WideString::from("Basic API"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: 0,
                                 control_key_state: 0,
@@ -90,7 +90,7 @@ impl Plugin {
                         },
                 basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_NONE,
-                            text: String::from("Panel API"),
+                            text: WideString::from("Panel API"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: winuser::VK_F4 as u16,
                                 control_key_state: 0,
@@ -98,7 +98,7 @@ impl Plugin {
                         },
                 basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_NONE,
-                            text: String::from("Editor API"),
+                            text: WideString::from("Editor API"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: 0,
                                 control_key_state: 0,
@@ -106,7 +106,7 @@ impl Plugin {
                         },
                 basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_NONE,
-                            text: String::from("Viewer API"),
+                            text: WideString::from("Viewer API"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: 0,
                                 control_key_state: 0,
@@ -114,7 +114,7 @@ impl Plugin {
                         },
                 basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_NONE,
-                            text: String::from("Dialog API"),
+                            text: WideString::from("Dialog API"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: 0,
                                 control_key_state: 0,
@@ -122,7 +122,7 @@ impl Plugin {
                         },
                 basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_NONE,
-                            text: String::from("Settings API"),
+                            text: WideString::from("Settings API"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: 0,
                                 control_key_state: 0,
@@ -130,7 +130,7 @@ impl Plugin {
                         },
                 basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_NONE,
-                            text: String::from("Plugin Manager API"),
+                            text: WideString::from("Plugin Manager API"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: 0,
                                 control_key_state: 0,
@@ -138,7 +138,7 @@ impl Plugin {
                         },
                 basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_NONE,
-                            text: String::from("Miscellaneous API"),
+                            text: WideString::from("Miscellaneous API"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: 0,
                                 control_key_state: 0,
@@ -146,7 +146,7 @@ impl Plugin {
                         },
                 basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_NONE,
-                            text: String::from("Macro API"),
+                            text: WideString::from("Macro API"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: 0,
                                 control_key_state: 0,
@@ -173,7 +173,7 @@ impl Plugin {
             Some("Basic API"), None, None, None,
             vec!(basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_SELECTED,
-                            text: String::from("GetMsg()"),
+                            text: WideString::from("GetMsg()"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: 0,
                                 control_key_state: 0,
@@ -181,7 +181,7 @@ impl Plugin {
                         },
                 basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_NONE,
-                            text: String::from("InputBox()"),
+                            text: WideString::from("InputBox()"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: winuser::VK_F4 as u16,
                                 control_key_state: 0,
@@ -189,7 +189,7 @@ impl Plugin {
                         },
                 basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_NONE,
-                            text: String::from("Menu()"),
+                            text: WideString::from("Menu()"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: 0,
                                 control_key_state: 0,
@@ -197,7 +197,7 @@ impl Plugin {
                         },
                 basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_NONE,
-                            text: String::from("Message()"),
+                            text: WideString::from("Message()"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: 0,
                                 control_key_state: 0,
@@ -205,7 +205,7 @@ impl Plugin {
                         },
                 basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_NONE,
-                            text: String::from("ShowHelp()"),
+                            text: WideString::from("ShowHelp()"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: 0,
                                 control_key_state: 0,
@@ -230,26 +230,26 @@ impl Plugin {
     fn get_msg(&mut self) {
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK | basic::FARMESSAGEFLAGS::FMSG_LEFTALIGN,
                        None,
-                       basic::MessageItems::Lines(vec!("".to_string(), basic::get_msg(&Lng::MenuItemTitle))),
+                       basic::MessageItems::Lines(vec!(WideString::new(), basic::get_msg(&Lng::MenuItemTitle))),
                        0);
 
     }
 
     fn input_box(&mut self) {
-        let input = basic::input_box(Some("Запрос данных"),
-                                    Some("Введите строку"),
-                                    Some("test_input"),
+        let input = basic::input_box(Some(WideString::from("Запрос данных")),
+                                    Some(WideString::from("Введите строку")),
+                                    Some(WideString::from("test_input")),
                                     None/*Some("<placeholder>")*/,
                                     10,
                                     None/*Some("Topic1")*/,
                                     basic::INPUTBOXFLAGS::FIB_NONE);
 
-        let mut lines: Vec<String> = vec!("".to_string());
+        let mut lines: Vec<WideString> = vec!(WideString::from(""));
         if input.is_some() {
-            lines.push(format!("Input: '{}'", input.unwrap()));
-            lines.push("Action: 'Ok'".to_string());
+            lines.push(WideString::from(format!("Input: '{}'", input.unwrap())));
+            lines.push(WideString::from("Action: 'Ok'"));
         } else {
-            lines.push("Action: 'Cancel'".to_string());
+            lines.push(WideString::from("Action: 'Cancel'"));
         }
         basic::message(basic::FARMESSAGEFLAGS::FMSG_LEFTALIGN | basic::FARMESSAGEFLAGS::FMSG_MB_OK, None,
                        basic::MessageItems::Lines(lines), 0);
@@ -269,7 +269,7 @@ impl Plugin {
             )),
             vec!(basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_NONE,
-                            text: String::from("Item0"),
+                            text: WideString::from("Item0"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: winuser::VK_F3 as u16,
                                 control_key_state: 0,
@@ -277,7 +277,7 @@ impl Plugin {
                         },
                 basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_NONE,
-                            text: String::from("Item1"),
+                            text: WideString::from("Item1"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: winuser::VK_F4 as u16,
                                 control_key_state: 0,
@@ -285,7 +285,7 @@ impl Plugin {
                         },
                 basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_NONE,
-                            text: String::from("Item2"),
+                            text: WideString::from("Item2"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: 0,
                                 control_key_state: 0,
@@ -294,15 +294,15 @@ impl Plugin {
             )
         );
 
-        let mut lines: Vec<String> = vec!("Menu result".to_string());
+        let mut lines: Vec<WideString> = vec!(WideString::from("Menu result"));
         if let Some(selected_item_val) = selected_item {
-            lines.push(format!("Selected menu item: {}", selected_item_val));
+            lines.push(WideString::from(format!("Selected menu item: {}", selected_item_val)));
         }
         if let Some(close_key_val) = close_key {
-            lines.push(format!("Close key number: {}", close_key_val));
+            lines.push(WideString::from(format!("Close key number: {}", close_key_val)));
         }
         if selected_item.is_none() && close_key.is_none() {
-            lines.push("Menu is closed with standard key".to_string());
+            lines.push(WideString::from("Menu is closed with standard key"));
         }
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK | basic::FARMESSAGEFLAGS::FMSG_LEFTALIGN,
                        None,
@@ -317,24 +317,24 @@ impl Plugin {
             basic::get_msg(&Lng::MessageLine1),
             basic::get_msg(&Lng::MessageLine2),
             basic::get_msg(&Lng::MessageLine3),
-            basic::DIALOG_SEPARATOR.to_string(),
+            WideString::from(basic::DIALOG_SEPARATOR),
             basic::get_msg(&Lng::MessageButton)
             )), 1);
         basic::message(basic::FARMESSAGEFLAGS::FMSG_LEFTALIGN | basic::FARMESSAGEFLAGS::FMSG_ALLINONE,
             None, basic::MessageItems::AllInOne(
-            format!("{}\n{}\n{}\n{}\n{}\n{}\n{}",
+            WideString::from(format!("{}\n{}\n{}\n{}\n{}\n{}\n{}",
                 basic::get_msg(&Lng::MessageTitleAllInOne),
                 basic::get_msg(&Lng::MessageLine0),
                 basic::get_msg(&Lng::MessageLine1),
                 basic::get_msg(&Lng::MessageLine2),
                 basic::get_msg(&Lng::MessageLine3),
-                basic::DIALOG_SEPARATOR.to_string(),
+                WideString::from(basic::DIALOG_SEPARATOR),
                 basic::get_msg(&Lng::MessageButton)
-            )), 1);
+            ))), 1);
     }
 
     fn show_help(&mut self) {
-        basic::show_help(&self.module_name, Some("Topic1"), basic::FARHELPFLAGS::FHELP_NONE);
+        basic::show_help(&self.module_name.to_string_lossy(), Some("Topic1"), basic::FARHELPFLAGS::FHELP_NONE);
     }
 
     pub fn panel_api(&mut self) {
@@ -344,7 +344,7 @@ impl Plugin {
              vec!(
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_SELECTED,
-                     text: String::from("PanelControl(): FCTL_CHECKPANELSEXIST"),
+                     text: WideString::from("PanelControl(): FCTL_CHECKPANELSEXIST"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -352,7 +352,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_SELECTED,
-                     text: String::from("PanelControl(): FCTL_ISACTIVEPANEL"),
+                     text: WideString::from("PanelControl(): FCTL_ISACTIVEPANEL"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -360,7 +360,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_SELECTED,
-                     text: String::from("PanelControl(): FCTL_CLOSEPANEL"),
+                     text: WideString::from("PanelControl(): FCTL_CLOSEPANEL"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -368,7 +368,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_GETPANELINFO"),
+                     text: WideString::from("PanelControl(): FCTL_GETPANELINFO"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -376,7 +376,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_GETCOLUMNTYPES"),
+                     text: WideString::from("PanelControl(): FCTL_GETCOLUMNTYPES"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -384,7 +384,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_GETCOLUMNWIDTHS"),
+                     text: WideString::from("PanelControl(): FCTL_GETCOLUMNWIDTHS"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -392,7 +392,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_GETPANELDIRECTORY"),
+                     text: WideString::from("PanelControl(): FCTL_GETPANELDIRECTORY"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -400,7 +400,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_GETPANELFORMAT"),
+                     text: WideString::from("PanelControl(): FCTL_GETPANELFORMAT"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -408,7 +408,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_GETPANELHOSTFILE"),
+                     text: WideString::from("PanelControl(): FCTL_GETPANELHOSTFILE"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -416,7 +416,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_GETPANELITEM"),
+                     text: WideString::from("PanelControl(): FCTL_GETPANELITEM"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -424,7 +424,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_GETPANELPREFIX"),
+                     text: WideString::from("PanelControl(): FCTL_GETPANELPREFIX"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -432,7 +432,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_GETSELECTEDPANELITEM"),
+                     text: WideString::from("PanelControl(): FCTL_GETSELECTEDPANELITEM"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -440,7 +440,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_GETCURRENTPANELITEM"),
+                     text: WideString::from("PanelControl(): FCTL_GETCURRENTPANELITEM"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -448,7 +448,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_REDRAWPANEL"),
+                     text: WideString::from("PanelControl(): FCTL_REDRAWPANEL"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -456,7 +456,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_SETACTIVEPANEL"),
+                     text: WideString::from("PanelControl(): FCTL_SETACTIVEPANEL"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -464,7 +464,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_SETPANELDIRECTORY"),
+                     text: WideString::from("PanelControl(): FCTL_SETPANELDIRECTORY"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -472,7 +472,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_BEGINSELECTION/FCTL_SETSELECTION/FCTL_ENDSELECTION"),
+                     text: WideString::from("PanelControl(): FCTL_BEGINSELECTION/FCTL_SETSELECTION/FCTL_ENDSELECTION"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -480,7 +480,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_CLEARSELECTION"),
+                     text: WideString::from("PanelControl(): FCTL_CLEARSELECTION"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -488,7 +488,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_SETSORTMODE"),
+                     text: WideString::from("PanelControl(): FCTL_SETSORTMODE"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -496,7 +496,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_SETSORTORDER"),
+                     text: WideString::from("PanelControl(): FCTL_SETSORTORDER"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -504,7 +504,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_SETVIEWMODE"),
+                     text: WideString::from("PanelControl(): FCTL_SETVIEWMODE"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -512,7 +512,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_UPDATEPANEL"),
+                     text: WideString::from("PanelControl(): FCTL_UPDATEPANEL"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -520,7 +520,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_SETDIRECTORIESFIRST"),
+                     text: WideString::from("PanelControl(): FCTL_SETDIRECTORIESFIRST"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -528,7 +528,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_GETCMDLINE"),
+                     text: WideString::from("PanelControl(): FCTL_GETCMDLINE"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -536,7 +536,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_GETCMDLINEPOS"),
+                     text: WideString::from("PanelControl(): FCTL_GETCMDLINEPOS"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -544,7 +544,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_GETCMDLINESELECTION"),
+                     text: WideString::from("PanelControl(): FCTL_GETCMDLINESELECTION"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -552,7 +552,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_INSERTCMDLINE"),
+                     text: WideString::from("PanelControl(): FCTL_INSERTCMDLINE"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -560,7 +560,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_SETCMDLINE"),
+                     text: WideString::from("PanelControl(): FCTL_SETCMDLINE"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -568,7 +568,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_SETCMDLINEPOS"),
+                     text: WideString::from("PanelControl(): FCTL_SETCMDLINEPOS"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -576,7 +576,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_SETCMDLINESELECTION"),
+                     text: WideString::from("PanelControl(): FCTL_SETCMDLINESELECTION"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -584,7 +584,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_SETUSERSCREEN"),
+                     text: WideString::from("PanelControl(): FCTL_SETUSERSCREEN"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -592,7 +592,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("PanelControl(): FCTL_GETUSERSCREEN"),
+                     text: WideString::from("PanelControl(): FCTL_GETUSERSCREEN"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -600,7 +600,7 @@ impl Plugin {
                  },
                  basic::FarMenuItem {
                      flags: basic::MENUITEMFLAGS::MIF_NONE,
-                     text: String::from("FileFilterControl()"),
+                     text: WideString::from("FileFilterControl()"),
                      accel_key: basic::FarKey {
                          virtual_key_code: 0,
                          control_key_state: 0,
@@ -653,7 +653,7 @@ impl Plugin {
         let result = panel::control::check_panels_exist();
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK,
                        None,
-                       basic::MessageItems::AllInOne(format!("\nPanels exist: '{}'", &result)),
+                       basic::MessageItems::AllInOne(WideString::from(format!("\nPanels exist: '{}'", &result))),
                        0);
     }
 
@@ -661,7 +661,7 @@ impl Plugin {
         let result = panel::control::is_active_panel(panel::Panel::Handle(42 as HANDLE));
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK,
                        None,
-                       basic::MessageItems::AllInOne(format!("\nActive panel: '{}'", &result)),
+                       basic::MessageItems::AllInOne(WideString::from(format!("\nActive panel: '{}'", &result))),
                        0);
     }
 
@@ -682,9 +682,9 @@ impl Plugin {
 
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK,
                        None,
-                       basic::MessageItems::Lines(vec!("Panel info".to_string(),
-                                                       format!("Items number: {}, selected items number: {}",
-                                                               value.items_number, value.selected_items_number))),
+                       basic::MessageItems::Lines(vec!(WideString::from("Panel info"),
+                                                       WideString::from(format!("Items number: {}, selected items number: {}",
+                                                               value.items_number, value.selected_items_number)))),
                        0);
     }
 
@@ -700,7 +700,7 @@ impl Plugin {
 
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK,
                        None,
-                       basic::MessageItems::AllInOne(format!("\nColumn types: {:?}", &value)),
+                       basic::MessageItems::AllInOne(WideString::from(format!("\nColumn types: {:?}", &value))),
                        0);
     }
 
@@ -716,7 +716,7 @@ impl Plugin {
 
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK,
                        None,
-                       basic::MessageItems::AllInOne(format!("\nColumn widths: {:?}", &value)),
+                       basic::MessageItems::AllInOne(WideString::from(format!("\nColumn widths: {:?}", &value))),
                        0);
     }
 
@@ -732,9 +732,9 @@ impl Plugin {
 
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK,
                        None,
-                       basic::MessageItems::Lines(vec!("Current directory".to_string(),
-                                                       format!("Directory: '{}'", &value.name),
-                                                       format!("File: '{}'", &value.file))),
+                       basic::MessageItems::Lines(vec!(WideString::from("Current directory"),
+                                                       WideString::from(format!("Directory: '{}'", &value.name)),
+                                                       WideString::from(format!("File: '{}'", &value.file)))),
                        0);
     }
 
@@ -750,7 +750,7 @@ impl Plugin {
 
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK,
                        None,
-                       basic::MessageItems::AllInOne(format!("\nPanel format: '{}'", value)),
+                       basic::MessageItems::AllInOne(WideString::from(format!("\nPanel format: '{}'", value))),
                        0);
     }
 
@@ -766,13 +766,13 @@ impl Plugin {
 
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK,
                        None,
-                       basic::MessageItems::Lines(vec!("Panel host file".to_string(),
-                                                       value)),
+                       basic::MessageItems::Lines(vec!(WideString::from("Panel host file"),
+                                                       WideString::from(value))),
                        0);
     }
 
     fn get_panel_item(&mut self) {
-        let item_num = basic::input_box(Some("Panel item number"),
+        let item_num = basic::input_box(Some(WideString::from("Panel item number")),
                                         None,
                                         None,
                                         None,
@@ -784,7 +784,7 @@ impl Plugin {
             return;
         }
 
-        let item_num: usize = match item_num.unwrap().parse() {
+        let item_num: usize = match item_num.unwrap().to_string_lossy().parse() {
             Ok(value) => value,
             Err(_) => return
         };
@@ -800,8 +800,8 @@ impl Plugin {
 
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK,
                        None,
-                       basic::MessageItems::Lines(vec!("Panel item".to_string(),
-                                                       format!("{}", &value.file_name))),
+                       basic::MessageItems::Lines(vec!(WideString::from("Panel item"),
+                                                       WideString::from(format!("{}", &value.file_name)))),
                        0);
     }
 
@@ -817,12 +817,12 @@ impl Plugin {
 
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK,
                        None,
-                       basic::MessageItems::AllInOne(format!("\nPanel prefix: '{}'", &value)),
+                       basic::MessageItems::AllInOne(WideString::from(format!("\nPanel prefix: '{}'", &value))),
                        0);
     }
 
     fn get_selected_panel_item(&mut self) {
-        let sel_item_num = basic::input_box(Some("Selected item number"),
+        let sel_item_num = basic::input_box(Some(WideString::from("Selected item number")),
                                             None,
                                             None,
                                             None,
@@ -833,7 +833,7 @@ impl Plugin {
         if sel_item_num.is_none() {
             return;
         }
-        let item_num: usize = match sel_item_num.unwrap().parse() {
+        let item_num: usize = match sel_item_num.unwrap().to_string_lossy().parse() {
             Ok(value) => value,
             Err(_) => return
         };
@@ -850,7 +850,7 @@ impl Plugin {
 
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK,
                        None,
-                       basic::MessageItems::AllInOne(format!("\nSelected panel item: '{}'", &value.file_name)),
+                       basic::MessageItems::AllInOne(WideString::from(format!("\nSelected panel item: '{}'", &value.file_name))),
                        0);
     }
 
@@ -866,12 +866,12 @@ impl Plugin {
 
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK,
                        None,
-                       basic::MessageItems::AllInOne(format!("\nCurrent panel item: '{}'", &panel_item.file_name)),
+                       basic::MessageItems::AllInOne(WideString::from(format!("\nCurrent panel item: '{}'", &panel_item.file_name))),
                        0);
     }
 
     fn redraw_panel(&mut self) {
-        let input_current_item = basic::input_box(Some("Current item"),
+        let input_current_item = basic::input_box(Some(WideString::from("Current item")),
                                                   None,
                                                   None,
                                                   None,
@@ -879,7 +879,7 @@ impl Plugin {
                                                   None,
                                                   basic::INPUTBOXFLAGS::FIB_NONE);
 
-        let input_top_panel_item = basic::input_box(Some("Top panel item"),
+        let input_top_panel_item = basic::input_box(Some(WideString::from("Top panel item")),
                                                     None,
                                                     None,
                                                     None,
@@ -888,7 +888,7 @@ impl Plugin {
                                                     basic::INPUTBOXFLAGS::FIB_NONE);
 
         let current_item: Option<usize> = if let Some(pos) = input_current_item {
-            if let Ok(pos) = pos.parse() {
+            if let Ok(pos) = pos.to_string_lossy().parse() {
                 Some(pos)
             } else {
                 None
@@ -898,7 +898,7 @@ impl Plugin {
         };
 
         let top_panel_item: Option<usize> = if let Some(pos) = input_top_panel_item {
-            if let Ok(pos) = pos.parse() {
+            if let Ok(pos) = pos.to_string_lossy().parse() {
                 Some(pos)
             } else {
                 None
@@ -922,7 +922,7 @@ impl Plugin {
     }
 
     fn set_panel_directory(&mut self) {
-        let input = basic::input_box(Some("Directory"),
+        let input = basic::input_box(Some(WideString::from("Directory")),
                                      None,
                                      None,
                                      None,
@@ -932,14 +932,14 @@ impl Plugin {
 
         match input {
             Some(dir) => {
-                let _ = panel::control::set_panel_directory(panel::Panel::Active, self.guid, dir, "".to_string());
+                let _ = panel::control::set_panel_directory(panel::Panel::Active, self.guid, dir.to_string_lossy(), "".to_string());
             },
             None => {},
         }
     }
 
     fn set_selection(&mut self) {
-        let item_num = basic::input_box(Some("Item number to select"),
+        let item_num = basic::input_box(Some(WideString::from("Item number to select")),
                                             None,
                                             None,
                                             None,
@@ -950,7 +950,7 @@ impl Plugin {
         if item_num.is_none() {
             return;
         }
-        let item_num: usize = match item_num.unwrap().parse::<usize>() {
+        let item_num: usize = match item_num.unwrap().to_string_lossy().parse::<usize>() {
             Ok(value) => value,
             Err(_) => return
         };
@@ -962,7 +962,7 @@ impl Plugin {
     }
 
     fn clear_selection(&mut self) {
-        let item_num = basic::input_box(Some("Item number to unselect"),
+        let item_num = basic::input_box(Some(WideString::from("Item number to unselect")),
                                         None,
                                         None,
                                         None,
@@ -973,7 +973,7 @@ impl Plugin {
         if item_num.is_none() {
             return;
         }
-        let item_num: usize = match item_num.unwrap().parse::<usize>() {
+        let item_num: usize = match item_num.unwrap().to_string_lossy().parse::<usize>() {
             Ok(value) => value,
             Err(_) => return
         };
@@ -1016,7 +1016,7 @@ impl Plugin {
 
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK,
                        None,
-                       basic::MessageItems::AllInOne(format!("\nCommand line: '{}'", &cmd_line)),
+                       basic::MessageItems::AllInOne(WideString::from(format!("\nCommand line: '{}'", &cmd_line))),
                        0);
     }
 
@@ -1032,7 +1032,7 @@ impl Plugin {
 
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK,
                        None,
-                       basic::MessageItems::AllInOne(format!("\nCommand line cursor position: '{}'", pos)),
+                       basic::MessageItems::AllInOne(WideString::from(format!("\nCommand line cursor position: '{}'", pos))),
                        0);
     }
 
@@ -1048,12 +1048,12 @@ impl Plugin {
 
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK,
                        None,
-                       basic::MessageItems::AllInOne(format!("Command line selection: [{},{})", sel_start, sel_end)),
+                       basic::MessageItems::AllInOne(WideString::from(format!("Command line selection: [{},{})", sel_start, sel_end))),
                        0);
     }
 
     fn insert_cmd_line(&mut self) {
-        let input = basic::input_box(Some("Text to insert to the command line"),
+        let input = basic::input_box(Some(WideString::from("Text to insert to the command line")),
                                      None,
                                      None,
                                      None,
@@ -1063,14 +1063,14 @@ impl Plugin {
 
         match input {
             Some(text) => {
-                let _ = panel::control::insert_cmd_line(panel::Panel::Active, text);
+                let _ = panel::control::insert_cmd_line(panel::Panel::Active, text.to_string_lossy());
             },
             None => {},
         }
     }
 
     fn set_cmd_line(&mut self) {
-        let input = basic::input_box(Some("Text to set to the command line"),
+        let input = basic::input_box(Some(WideString::from("Text to set to the command line")),
                                      None,
                                      None,
                                      None,
@@ -1080,14 +1080,14 @@ impl Plugin {
 
         match input {
             Some(text) => {
-                let _ = panel::control::set_cmd_line(panel::Panel::Active, text);
+                let _ = panel::control::set_cmd_line(panel::Panel::Active, text.to_string_lossy());
             },
             None => {},
         }
     }
 
     fn set_cmd_line_pos(&mut self) {
-        let input = basic::input_box(Some("Text to set to the command line"),
+        let input = basic::input_box(Some(WideString::from("Text to set to the command line")),
                                      None,
                                      None,
                                      None,
@@ -1097,7 +1097,7 @@ impl Plugin {
 
         match input {
             Some(text) => {
-                let pos = text.parse();
+                let pos = text.to_string_lossy().parse();
                 match pos {
                     Ok(pos) => {
                         let _ = panel::control::set_cmd_line_pos(panel::Panel::Active, pos);
@@ -1111,7 +1111,7 @@ impl Plugin {
 
     fn set_cmd_line_selection(&mut self) {
         let mut reset_selection = false;
-        let input_sel_start = basic::input_box(Some("Command line selection start position"),
+        let input_sel_start = basic::input_box(Some(WideString::from("Command line selection start position")),
                                      None,
                                      None,
                                      None,
@@ -1123,7 +1123,7 @@ impl Plugin {
             reset_selection = true;
         }
 
-        let input_sel_end = basic::input_box(Some("Command line selection end position"),
+        let input_sel_end = basic::input_box(Some(WideString::from("Command line selection end position")),
                                              None,
                                              None,
                                              None,
@@ -1136,7 +1136,7 @@ impl Plugin {
         }
 
         let pos_start: Option<usize> = if let Some(pos) = input_sel_start {
-            if let Ok(pos) = pos.parse() {
+            if let Ok(pos) = pos.to_string_lossy().parse() {
                 Some(pos)
             } else {
                 None
@@ -1146,7 +1146,7 @@ impl Plugin {
         };
 
         let pos_end: Option<usize> = if let Some(pos) = input_sel_end {
-            if let Ok(pos) = pos.parse() {
+            if let Ok(pos) = pos.to_string_lossy().parse() {
                 Some(pos)
             } else {
                 None
@@ -1195,7 +1195,7 @@ impl Plugin {
             Err(_) => {
                 basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK | basic::FARMESSAGEFLAGS::FMSG_WARNING | basic::FARMESSAGEFLAGS::FMSG_ERRORTYPE,
                                None,
-                               basic::MessageItems::AllInOne("FileFilterControl()".to_string()),
+                               basic::MessageItems::AllInOne(WideString::from("FileFilterControl()")),
                                0);
             },
         }
@@ -1207,7 +1207,7 @@ impl Plugin {
             Some("Editor API"), None, None, None,
             vec!(basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_SELECTED,
-                            text: String::from("Editor()"),
+                            text: WideString::from("Editor()"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: 0,
                                 control_key_state: 0,
@@ -1215,7 +1215,7 @@ impl Plugin {
                         },
                 basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_NONE,
-                            text: String::from("EditorControl()"),
+                            text: WideString::from("EditorControl()"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: winuser::VK_F4 as u16,
                                 control_key_state: 0,
@@ -1234,7 +1234,7 @@ impl Plugin {
     }
 
     fn editor(&mut self) {
-        let input = basic::input_box(Some("File to edit"),
+        let input = basic::input_box(Some(WideString::from("File to edit")),
                                      None,
                                      None,
                                      None,
@@ -1243,7 +1243,7 @@ impl Plugin {
                                      basic::INPUTBOXFLAGS::FIB_NONE);
 
         match input {
-            Some(path) => editor::open_editor(path),
+            Some(path) => editor::open_editor(path.to_string_lossy()),
             None => {},
         }
     }
@@ -1254,7 +1254,7 @@ impl Plugin {
             Some("Viewer API"), None, None, None,
             vec!(basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_SELECTED,
-                            text: String::from("Viewer()"),
+                            text: WideString::from("Viewer()"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: 0,
                                 control_key_state: 0,
@@ -1262,7 +1262,7 @@ impl Plugin {
                         },
                 basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_NONE,
-                            text: String::from("ViewerControl()"),
+                            text: WideString::from("ViewerControl()"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: 0,
                                 control_key_state: 0,
@@ -1281,7 +1281,7 @@ impl Plugin {
     }
 
     fn viewer(&mut self) {
-        let input = basic::input_box(Some("File to view"),
+        let input = basic::input_box(Some(WideString::from("File to view")),
                                      None,
                                      None,
                                      None,
@@ -1290,7 +1290,7 @@ impl Plugin {
                                      basic::INPUTBOXFLAGS::FIB_NONE);
 
         match input {
-            Some(path) => viewer::open_viewer(path),
+            Some(path) => viewer::open_viewer(path.to_string_lossy()),
             None => {},
         }
     }
@@ -1301,7 +1301,7 @@ impl Plugin {
             Some("Miscellaneous API"), None, None, None,
             vec!(basic::FarMenuItem {
                             flags: basic::MENUITEMFLAGS::MIF_SELECTED,
-                            text: String::from("ColorDialog()"),
+                            text: WideString::from("ColorDialog()"),
                             accel_key: basic::FarKey {
                                 virtual_key_code: 0,
                                 control_key_state: 0,
@@ -1335,7 +1335,7 @@ impl Plugin {
                 let ba = b_rgba.a;
                 basic::message(basic::FARMESSAGEFLAGS::FMSG_LEFTALIGN | basic::FARMESSAGEFLAGS::FMSG_ALLINONE,
                                None, basic::MessageItems::AllInOne(
-                        format!("{}\nForeground:\nR:{} G:{} B:{} A:{}\nBackground:\nR:{} G:{} B:{} A:{}\n{}\n{}",
+                        WideString::from(format!("{}\nForeground:\nR:{} G:{} B:{} A:{}\nBackground:\nR:{} G:{} B:{} A:{}\n{}\n{}",
                                 "Color".to_string(),
                                 fr,
                                 fg,
@@ -1347,17 +1347,17 @@ impl Plugin {
                                 ba,
                                 basic::DIALOG_SEPARATOR.to_string(),
                                 basic::get_msg(&Lng::MessageButton)
-                        )), 1);
+                        ))), 1);
             },
             _ => {
                 basic::message(basic::FARMESSAGEFLAGS::FMSG_LEFTALIGN | basic::FARMESSAGEFLAGS::FMSG_ALLINONE,
                                None, basic::MessageItems::AllInOne(
-                        format!("{}\n{}\n{}\n{}",
+                        WideString::from(format!("{}\n{}\n{}\n{}",
                                 "Color".to_string(),
                                 "Colors are not selected".to_string(),
                                 basic::DIALOG_SEPARATOR.to_string(),
                                 basic::get_msg(&Lng::MessageButton)
-                        )), 1);
+                        ))), 1);
             }
         }
     }
@@ -1398,9 +1398,9 @@ impl basic::ExportFunctions for Plugin {
                     stage: basic::VersionStage::VS_ALPHA
                 },
             guid: self.guid,
-            title: String::from("API Showcase"),
-            description: String::from("API showcase plugin written in Rust"),
-            author: String::from("Dmitry Pelevin <dpelevin@gmail.com>"),
+            title: WideString::from("API Showcase"),
+            description: WideString::from("API showcase plugin written in Rust"),
+            author: WideString::from("Dmitry Pelevin <dpelevin@gmail.com>"),
         }
     }
 
@@ -1412,7 +1412,7 @@ impl basic::ExportFunctions for Plugin {
     fn get_plugin_info(&mut self) -> basic::PluginInfo {
         basic::PluginInfo {
             flags: basic::PLUGIN_FLAGS::PF_EDITOR,
-            command_prefix: Some(String::from("rust")),
+            command_prefix: Some(WideString::from("rust")),
             plugin_menu: vec!(basic::MenuItem {
                 guid: GUID {
                     Data1: 0x788f13f7,
@@ -1448,8 +1448,8 @@ impl basic::ExportFunctions for Plugin {
             basic::OpenFrom::LeftDiskMenu => {
                 basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK | basic::FARMESSAGEFLAGS::FMSG_ALLINONE,
                                None,
-                               basic::MessageItems::AllInOne(format!("\n{}",
-                                    basic::get_msg(&Lng::MessageFromLeftDiskMenu))),
+                               basic::MessageItems::AllInOne(WideString::from(format!("\n{}",
+                                    basic::get_msg(&Lng::MessageFromLeftDiskMenu)))),
                                0);
                 42 as HANDLE
             },
@@ -1461,7 +1461,7 @@ impl basic::ExportFunctions for Plugin {
             basic::OpenFrom::Shortcut(_data) => {
                 basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK | basic::FARMESSAGEFLAGS::FMSG_ALLINONE,
                                None,
-                               basic::MessageItems::AllInOne(format!("\nOpened from a shortcut")),
+                               basic::MessageItems::AllInOne(WideString::from(format!("\nOpened from a shortcut"))),
                                0);
                 42 as HANDLE
             },
@@ -1480,7 +1480,7 @@ impl basic::ExportFunctions for Plugin {
             basic::OpenFrom::Analyse(data) => {
                 basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK,
                                None,
-                               basic::MessageItems::Lines(vec!("".to_string(),
+                               basic::MessageItems::Lines(vec!(WideString::new(),
                                                                    basic::get_msg(&Lng::MessageFromAnalyse),
                                                                    data.info.file_name)),
                                0);
@@ -1489,8 +1489,8 @@ impl basic::ExportFunctions for Plugin {
             basic::OpenFrom::RightDiskMenu => {
                 basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK | basic::FARMESSAGEFLAGS::FMSG_ALLINONE,
                                None,
-                               basic::MessageItems::AllInOne(format!("\n{}",
-                                    basic::get_msg(&Lng::MessageFromRightDiskMenu))),
+                               basic::MessageItems::AllInOne(WideString::from(format!("\n{}",
+                                    basic::get_msg(&Lng::MessageFromRightDiskMenu)))),
                                0);
                 84 as HANDLE
             },
@@ -1513,9 +1513,9 @@ impl panel::ExportFunctions for Plugin {
     fn analyse(&mut self, info: panel::AnalyseInfo) -> crate::HANDLE {
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK,
                        None,
-                       basic::MessageItems::Lines(vec!("AnalyseW".to_string(),
-                                                           info.file_name,
-                                                           format!("Data buffer size: {}", info.buffer.len()))),
+                       basic::MessageItems::Lines(vec!(WideString::from("AnalyseW"),
+                                                           WideString::from(info.file_name),
+                                                           WideString::from(format!("Data buffer size: {}", info.buffer.len())))),
                        0);
         let result: crate::HANDLE = 1 as crate::HANDLE;//ptr::null_mut();
         result
@@ -1524,7 +1524,7 @@ impl panel::ExportFunctions for Plugin {
     fn close_analyse(&mut self, _info: panel::CloseAnalyseInfo) {
         basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK | basic::FARMESSAGEFLAGS::FMSG_ALLINONE,
                        None,
-                       basic::MessageItems::AllInOne(format!("CloseAnalyseW\n")),
+                       basic::MessageItems::AllInOne(WideString::from(format!("CloseAnalyseW\n"))),
                        0);
     }
 
@@ -1546,16 +1546,16 @@ impl panel::ExportFunctions for Plugin {
                     format: None,
                     panel_title,
                     info_lines: vec!(panel::InfoPanelLine{
-                        text: basic::get_msg(&Lng::PanelMessageLine1),
-                        data: basic::get_msg(&Lng::PanelMessageData1),
+                        text: basic::get_msg(&Lng::PanelMessageLine1).to_string_lossy(),
+                        data: basic::get_msg(&Lng::PanelMessageData1).to_string_lossy(),
                         flags: panel::INFOPANELLINE_FLAGS::IPLFLAGS_NONE,
                     },panel::InfoPanelLine{
-                        text: basic::get_msg(&Lng::PanelMessageSeparator1),
+                        text: basic::get_msg(&Lng::PanelMessageSeparator1).to_string_lossy(),
                         data: "".to_string(),
                         flags: panel::INFOPANELLINE_FLAGS::IPLFLAGS_SEPARATOR,
                     },panel::InfoPanelLine{
-                        text: basic::get_msg(&Lng::PanelMessageLine2),
-                        data: basic::get_msg(&Lng::PanelMessageData2),
+                        text: basic::get_msg(&Lng::PanelMessageLine2).to_string_lossy(),
+                        data: basic::get_msg(&Lng::PanelMessageData2).to_string_lossy(),
                         flags: panel::INFOPANELLINE_FLAGS::IPLFLAGS_NONE,
                     }),
                     descr_files: None,
@@ -1745,8 +1745,8 @@ impl panel::ExportFunctions for Plugin {
         let result: Result<ReturnCode>;
         let mut cancelled = false;
         if !&info.op_mode.contains(panel::OPERATION_MODES::OPM_SILENT) {
-            let input = basic::input_box(Some(&basic::get_msg(&Lng::MessageTitleCreateDirectory)),
-                                         Some(&basic::get_msg(&Lng::MessageCreateDirectoryName)),
+            let input = basic::input_box(Some(basic::get_msg(&Lng::MessageTitleCreateDirectory)),
+                                         Some(basic::get_msg(&Lng::MessageCreateDirectoryName)),
                                          None,
                                          None,
                                          100,
@@ -1847,7 +1847,7 @@ fn filetime_from_u64(filetime: u64) -> panel::FILETIME {
 fn unimplemented_api() {
     basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK | basic::FARMESSAGEFLAGS::FMSG_WARNING,
                    None,
-                   basic::MessageItems::Lines(vec!("".to_string(),
+                   basic::MessageItems::Lines(vec!(WideString::new(),
                                                        basic::get_msg(&Lng::MessageApiIsNotImplemented))),
                    0);
 }
@@ -1855,21 +1855,21 @@ fn unimplemented_api() {
 fn error_dialog(e: farmanager::Error) {
     basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK | basic::FARMESSAGEFLAGS::FMSG_WARNING,
                    None,
-                   basic::MessageItems::AllInOne(format!("{}\n{}: {}\n{}: {}",
+                   basic::MessageItems::AllInOne(WideString::from(format!("{}\n{}: {}\n{}: {}",
                                                          basic::get_msg(&Lng::ErrorTitle),
                                                          basic::get_msg(&Lng::ErrorCause),
                                                          e.as_fail(),
                                                          basic::get_msg(&Lng::ErrorBacktrace),
-                                                         e.backtrace())),
+                                                         e.backtrace()))),
                    0);
     basic::message(basic::FARMESSAGEFLAGS::FMSG_MB_OK | basic::FARMESSAGEFLAGS::FMSG_WARNING,
                    None,
-                   basic::MessageItems::AllInOne(format!("{}\n{}: {}\n{}: {}",
+                   basic::MessageItems::AllInOne(WideString::from(format!("{}\n{}: {}\n{}: {}",
                                                          basic::get_msg(&Lng::ErrorTitle),
                                                          basic::get_msg(&Lng::ErrorCause),
                                                          e.as_fail(),
                                                          basic::get_msg(&Lng::ErrorBacktrace),
-                                                         e.backtrace())),
+                                                         e.backtrace()))),
                    0);
 }
 

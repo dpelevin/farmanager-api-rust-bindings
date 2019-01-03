@@ -27,7 +27,7 @@ impl From<&Vec<MenuItem>> for PluginMenuItem {
 
         for item in menu_items.iter() {
             guids.push(item.guid);
-            strings.push(WideString::from(item.label.as_str()));
+            strings.push(item.label.clone());
         }
 
         let guids_slice: Box<[ffi::GUID]> = guids.into_boxed_slice();
@@ -67,10 +67,7 @@ impl From<PluginInfo> for PluginInfoContext {
             disk_menu: PluginMenuItem::from(&plugin_info.disk_menu),
             plugin_menu: PluginMenuItem::from(&plugin_info.plugin_menu),
             plugin_config: PluginMenuItem::from(&plugin_info.plugin_config),
-            command_prefix: match &plugin_info.command_prefix {
-                Some(prefix) => Some(WideString::from(prefix.as_str())),
-                None => None
-            }
+            command_prefix: plugin_info.command_prefix
         }
     }
 }
@@ -101,9 +98,9 @@ impl Enrichable<Context, GlobalInfo> for ffi::GlobalInfo {
     fn enrich(&mut self, ctx: &mut Context, src: GlobalInfo) {
         ctx.global_info = Some(GlobalInfoContext {
             guid: src.guid,
-            title: WideString::from(src.title.as_str()),
-            description: WideString::from(src.description.as_str()),
-            author: WideString::from(src.author.as_str()),
+            title: src.title,
+            description: src.description,
+            author: src.author,
         });
 
         let info_ref = ctx.global_info.as_ref().unwrap_or_else(panic_global_info_uninitialized);

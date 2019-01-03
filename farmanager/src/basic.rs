@@ -74,9 +74,9 @@ pub struct GlobalInfo {
     pub min_far_version: ffi::VersionInfo,
     pub version: ffi::VersionInfo,
     pub guid: ffi::GUID,
-    pub title: String,
-    pub description: String,
-    pub author: String
+    pub title: WideString,
+    pub description: WideString,
+    pub author: WideString
 }
 
 impl Default for GlobalInfo {
@@ -86,9 +86,9 @@ impl Default for GlobalInfo {
             min_far_version: ffi::VersionInfo::default(),
             version: ffi::VersionInfo::default(),
             guid: ffi::DEFAULT_GUID,
-            title: String::default(),
-            description: String::default(),
-            author: String::default(),
+            title: WideString::new(),
+            description: WideString::new(),
+            author: WideString::new(),
         }
     }
 }
@@ -99,31 +99,31 @@ pub struct PluginInfo {
     pub disk_menu: Vec<MenuItem>,
     pub plugin_menu: Vec<MenuItem>,
     pub plugin_config: Vec<MenuItem>,
-    pub command_prefix: Option<String>
+    pub command_prefix: Option<WideString>
 }
 
 pub struct PluginStartupInfo {
-    pub module_name: String
+    pub module_name: WideString
 }
 
 pub struct MenuItem {
     pub guid: ffi::GUID,
-    pub label: String
+    pub label: WideString
 }
 
 pub struct FarMenuItem {
     pub flags: ffi::MENUITEMFLAGS,
-    pub text: String,
+    pub text: WideString,
     pub accel_key: FarKey
 }
 
 pub struct OpenCommandLineInfo {
-    pub command_line: String
+    pub command_line: WideString
 }
 
 pub struct OpenShortcutInfo {
-    pub host_file: Option<String>,
-    pub shortcut_data: Option<String>,
+    pub host_file: Option<WideString>,
+    pub shortcut_data: Option<WideString>,
     pub flags: ffi::FAROPENSHORTCUTFLAGS,
 }
 
@@ -137,7 +137,7 @@ pub struct OpenAnalyseInfo {
 }
 
 pub struct AnalyseInfo {
-    pub file_name: String,
+    pub file_name: WideString,
     pub buffer: Vec<u8>,
     pub op_mode: ffi::OPERATION_MODES
 }
@@ -182,52 +182,47 @@ pub(crate) fn plugin_guid() -> crate::GUID {
     context(|ctx: &mut ctx::Context| ctx.plugin_guid())
 }
 
-pub fn get_msg(key: &dyn Langpack) -> String {
+pub fn get_msg(key: &dyn Langpack) -> WideString {
     trace!(">get_msg()");
-    let result: String;
+    let result: WideString;
     result = far_api(|far_api: &mut ffi::PluginStartupInfo| {
         let guid = &context(|ctx: &mut ctx::Context| ctx.plugin_guid());
 
         let raw_msg: *const ffi::wchar_t = far_api.get_msg(guid, key.to_message_id());
-        return unsafe { WideString::from_ptr_str(raw_msg) }.to_string_lossy()
+        return unsafe { WideString::from_ptr_str(raw_msg) }
     });
 
     trace!("<get_msg()");
     return result;
 }
 
-pub fn input_box(title: Option<&str>,
-                 sub_title: Option<&str>,
-                 history_name: Option<&str>,
-                 src_text: Option<&str>,
-                 input_length: usize, help_topic: Option<&str>,
-                 flags: ffi::INPUTBOXFLAGS) -> Option<String> {
+pub fn input_box(title: Option<WideString>,
+                 sub_title: Option<WideString>,
+                 history_name: Option<WideString>,
+                 src_text: Option<WideString>,
+                 input_length: usize, help_topic: Option<WideString>,
+                 flags: ffi::INPUTBOXFLAGS) -> Option<WideString> {
     trace!(">input_box()");
     let guid = &context(|ctx: &mut ctx::Context| ctx.plugin_guid());
     let event_guid: ffi::GUID = common::generate_guid();
 
-    let title_ws = title.map(WideString::from);
-    let sub_title_ws = sub_title.map(WideString::from);
-    let history_name_ws = history_name.map(WideString::from);
-    let src_text_ws = src_text.map(WideString::from);
-    let help_topic_ws = help_topic.map(WideString::from);
     let dest_text_buf: Vec<ffi::wchar_t> = vec![0; input_length];
 
     let return_code;
     return_code = far_api(|far_api: &mut ffi::PluginStartupInfo| {
         far_api.input_box(guid, &event_guid,
-                          title_ws.as_ref().map_or(ptr::null(),|s| s.as_ptr()),
-                          sub_title_ws.as_ref().map_or(ptr::null(),|s| s.as_ptr()),
-                          history_name_ws.as_ref().map_or(ptr::null(),|s| s.as_ptr()),
-                          src_text_ws.as_ref().map_or(ptr::null(),|s| s.as_ptr()),
+                          title.as_ref().map_or(ptr::null(),|s| s.as_ptr()),
+                          sub_title.as_ref().map_or(ptr::null(),|s| s.as_ptr()),
+                          history_name.as_ref().map_or(ptr::null(),|s| s.as_ptr()),
+                          src_text.as_ref().map_or(ptr::null(),|s| s.as_ptr()),
                           dest_text_buf.as_ptr(),
                           input_length,
-                          help_topic_ws.as_ref().map_or(ptr::null(),|s| s.as_ptr()),
+                          help_topic.as_ref().map_or(ptr::null(),|s| s.as_ptr()),
                           flags)
     });
 
     let result = if return_code != 0 {
-        Some(WideString::from(dest_text_buf.as_slice()).to_string_lossy())
+        Some(WideString::from(dest_text_buf.as_slice()))
     } else {
         None
     };
@@ -299,38 +294,33 @@ pub fn show_help(module_name: &str, topic: Option<&str>, flags: ffi::FARHELPFLAG
 }
 
 pub enum MessageItems {
-    Lines(Vec<String>),
-    AllInOne(String)
+    Lines(Vec<WideString>),
+    AllInOne(WideString)
 }
 
-pub fn message(flags: ffi::FARMESSAGEFLAGS, help_topic: Option<&str>,
+pub fn message(flags: ffi::FARMESSAGEFLAGS, help_topic: Option<&WideString>,
                items: MessageItems, buttons_number: usize) -> Option<usize> {
     trace!(">message()");
     let result = far_api(|far_api: &mut ffi::PluginStartupInfo| {
         let guid = &context(|ctx: &mut ctx::Context| ctx.plugin_guid());
         let event_guid: ffi::GUID = common::generate_guid();
 
-        let help_topic_ws;
-
         let result: isize;
         match items {
             MessageItems::Lines(lines) => {
-                let wlines = WideStringArray::from(lines.as_slice());
-                help_topic_ws = help_topic.map(WideString::from);
+                let wlines = WideStringArray::from(lines);
                 result = far_api.message(guid, &event_guid,
                                          flags - ffi::FARMESSAGEFLAGS::FMSG_ALLINONE,
-                                         help_topic_ws.as_ref().map_or(ptr::null(), |s| s.as_ptr()),
+                                         help_topic.as_ref().map_or(ptr::null(), |s| s.as_ptr()),
                                          wlines.as_ptr(),
                                          wlines.len(),
                                          buttons_number as isize);
             },
             MessageItems::AllInOne(line) => {
-                let first_line = WideString::from(line.as_str());
-                help_topic_ws = help_topic.map(WideString::from);
                 result = far_api.message(guid, &event_guid,
                                          flags | ffi::FARMESSAGEFLAGS::FMSG_ALLINONE,
-                                         help_topic_ws.as_ref().map_or(ptr::null(), |s| s.as_ptr()),
-                                         first_line.as_ptr() as *const *const ffi::wchar_t,
+                                         help_topic.as_ref().map_or(ptr::null(), |s| s.as_ptr()),
+                                         line.as_ptr() as *const *const ffi::wchar_t,
                                          0,
                                          buttons_number as isize);
             },
@@ -395,7 +385,7 @@ pub extern "system" fn set_startup_info(plugin_startup_info: *const ffi::PluginS
     });
     plugin(|plugin: &mut dyn FarPlugin| {
         plugin.basic_exports().set_startup_info(PluginStartupInfo {
-            module_name: module_name_ws.to_string_lossy()
+            module_name: module_name_ws
         });
     });
     trace!("<register_plugin()");
@@ -447,12 +437,12 @@ pub extern "system" fn open(info: *const ffi::OpenInfo) -> ffi::HANDLE {
                 };
                 plugin(|plugin: &mut dyn FarPlugin| {
                     let host_file = if data.host_file != ptr::null() {
-                        Some(unsafe { WideString::from_ptr_str(data.host_file) }.to_string_lossy())
+                        Some(unsafe { WideString::from_ptr_str(data.host_file) })
                     } else {
                         None
                     };
                     let shortcut_data = if data.host_file != ptr::null() {
-                        Some(unsafe { WideString::from_ptr_str(data.shortcut_data) }.to_string_lossy())
+                        Some(unsafe { WideString::from_ptr_str(data.shortcut_data) })
                     } else {
                         None
                     };
@@ -470,7 +460,7 @@ pub extern "system" fn open(info: *const ffi::OpenInfo) -> ffi::HANDLE {
                 };
                 plugin(|plugin: &mut dyn FarPlugin| {
                     plugin.basic_exports().open(OpenFrom::CommandLine(OpenCommandLineInfo {
-                        command_line: unsafe { WideString::from_ptr_str(data.command_line) }.to_string_lossy()
+                        command_line: unsafe { WideString::from_ptr_str(data.command_line) }
                     }))
                 })
             },
@@ -520,7 +510,7 @@ pub extern "system" fn open(info: *const ffi::OpenInfo) -> ffi::HANDLE {
                     }
                     plugin.basic_exports().open(OpenFrom::Analyse(OpenAnalyseInfo {
                         info: AnalyseInfo {
-                            file_name: unsafe { WideString::from_ptr_str(analyse_info.file_name) }.to_string_lossy(),
+                            file_name: unsafe { WideString::from_ptr_str(analyse_info.file_name) },
                             buffer: bytes,
                             op_mode: analyse_info.op_mode
                         },

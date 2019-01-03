@@ -60,9 +60,9 @@ impl basic::ExportFunctions for Plugin {
                     stage: basic::VersionStage::VS_ALPHA
                 },
             guid: self.guid,
-            title: String::from("HelloRust"),
-            description: String::from("Hello world plugin written in Rust"),
-            author: String::from("Dmitry Pelevin <dpelevin@gmail.com>"),
+            title: WideString::from("HelloRust"),
+            description: WideString::from("Hello world plugin written in Rust"),
+            author: WideString::from("Dmitry Pelevin <dpelevin@gmail.com>"),
         }
     }
 
@@ -95,7 +95,7 @@ impl basic::ExportFunctions for Plugin {
                                    basic::get_msg(&Lng::MessageLine1),
                                    basic::get_msg(&Lng::MessageLine2),
                                    basic::get_msg(&Lng::MessageLine3),
-                                   basic::DIALOG_SEPARATOR.to_string(),
+                                   WideString::from(basic::DIALOG_SEPARATOR),
                                    basic::get_msg(&Lng::MessageButton)
                                )), 1);
             },

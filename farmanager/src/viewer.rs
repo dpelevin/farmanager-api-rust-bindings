@@ -5,7 +5,7 @@ use crate::far_api;
 use crate::ffi;
 
 // TODO review and update
-pub fn open_viewer(path: String) {
+pub fn open_viewer(path: WideString) {
     trace!(">open_viewer()");
     far_api(|far_api: &mut ffi::PluginStartupInfo| {
         let file_name = WideString::from(path);

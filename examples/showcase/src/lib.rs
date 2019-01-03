@@ -1243,7 +1243,7 @@ impl Plugin {
                                      basic::INPUTBOXFLAGS::FIB_NONE);
 
         match input {
-            Some(path) => editor::open_editor(path.to_string_lossy()),
+            Some(path) => editor::open_editor(path),
             None => {},
         }
     }
@@ -1290,7 +1290,7 @@ impl Plugin {
                                      basic::INPUTBOXFLAGS::FIB_NONE);
 
         match input {
-            Some(path) => viewer::open_viewer(path.to_string_lossy()),
+            Some(path) => viewer::open_viewer(path),
             None => {},
         }
     }

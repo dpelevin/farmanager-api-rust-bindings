@@ -1,15 +1,16 @@
-extern crate libc;
-
 use std::cell::RefCell;
 use std::cmp::Ordering;
 use std::mem;
 use std::panic;
 use std::prelude::v1::Vec;
 use std::ptr;
+use std::rc::Rc;
+use std::rc::Weak;
 use std::slice;
 
 use bitflags::bitflags;
 use failure::*;
+use libc::*;
 use log::*;
 
 #[allow(unused_imports)] // TODO remove after IntelliJ Rust will stop to highlight is as an error
@@ -36,8 +37,6 @@ use crate::Result;
 pub use crate::ReturnCode as ReturnCode;
 
 use self::wrapper as wrp;
-use std::rc::Rc;
-use std::rc::Weak;
 
 mod ctx;
 mod wrapper;

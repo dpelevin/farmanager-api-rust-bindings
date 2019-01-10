@@ -474,13 +474,21 @@ pub struct FAR_CHAR_INFO {
 }
 
 #[repr(C)] #[derive(Clone, Copy)]
+pub union FarDialogItemParam {
+    pub selected: intptr_t,
+    pub list_items: *mut FarList,
+    pub v_buf:  *mut FAR_CHAR_INFO,
+    pub reserved: intptr_t
+}
+
+#[repr(C)] #[derive(Clone, Copy)]
 pub struct FarDialogItem {
     pub item_type: FARDIALOGITEMTYPES,
     pub x1: intptr_t,
-    pub y1: c_longlong,
-    pub x2: c_longlong,
-    pub y2: c_longlong,
-    pub param: *mut c_void,
+    pub y1: intptr_t,
+    pub x2: intptr_t,
+    pub y2: intptr_t,
+    pub param: FarDialogItemParam,
     pub history: *const wchar_t,
     pub mask: *const wchar_t,
     pub flags: FARDIALOGITEMFLAGS,
@@ -539,7 +547,7 @@ bitflags! {
     }
 }
 
-pub type FARWINDOWPROC = extern fn(h_dlg: HANDLE, msg: intptr_t, param1: intptr_t, param2: *const c_void) -> intptr_t;
+pub type FARWINDOWPROC = extern fn(h_dlg: HANDLE, msg: intptr_t, param1: intptr_t, param2: *mut c_void) -> intptr_t;
 
 pub type FARAPISENDDLGMESSAGE = extern fn(h_dlg: HANDLE, msg: intptr_t, param1: intptr_t, param2: *const c_void) -> intptr_t;
 
@@ -2260,11 +2268,11 @@ impl PluginStartupInfo {
         (self.dialog_free)(h_dlg)
     }
 
-    pub fn send_dlg_message(&self, h_dlg: HANDLE, msg: intptr_t, param1: intptr_t, param2: *mut c_void) -> intptr_t {
+    pub fn send_dlg_message(&self, h_dlg: HANDLE, msg: intptr_t, param1: intptr_t, param2: *const c_void) -> intptr_t {
         (self.send_dlg_message)(h_dlg, msg, param1, param2)
     }
 
-    pub fn def_dlg_proc(&self, h_dlg: HANDLE, msg: intptr_t, param1: intptr_t, param2: *mut c_void) -> intptr_t {
+    pub fn def_dlg_proc(&self, h_dlg: HANDLE, msg: intptr_t, param1: intptr_t, param2: *const c_void) -> intptr_t {
         (self.def_dlg_proc)(h_dlg, msg, param1, param2)
     }
 

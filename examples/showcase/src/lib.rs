@@ -49,6 +49,36 @@ impl PanelState {
     }
 }
 
+struct TestDialog {
+
+}
+
+impl dialog::FarDialog for TestDialog {
+    fn dlg_proc(&mut self, h_dlg: farmanager::HANDLE, msg: dialog::FarMessage) -> isize {
+        trace!(">dlg_proc()");
+        let result: isize = match msg {
+            dialog::FarMessage::DnBtnClick { id, state } => {
+                let text = WideString::from(format!("{}\nButton: {}\nState: {}\n{}\n{}",
+                                                  "DnBtnClick".to_string(),
+                                                  id,
+                                                  state,
+                                                  basic::DIALOG_SEPARATOR.to_string(),
+                                                  basic::get_msg(&Lng::MessageButton)));
+                basic::message(basic::FARMESSAGEFLAGS::FMSG_LEFTALIGN | basic::FARMESSAGEFLAGS::FMSG_ALLINONE,
+                               None, basic::MessageItems::AllInOne(text), 1);
+                1
+            },
+            _ => {
+                // TODO uncomment as support for all FarMessages is implemented
+                // dialog::def_dlg_proc(h_dlg, msg)
+                0
+            },
+        };
+        trace!("<dlg_proc()");
+        return result;
+    }
+}
+
 plugin!(Plugin);
 
 struct Plugin {
@@ -161,6 +191,7 @@ impl Plugin {
                 1 => { self.panel_api(); self.showcase(); },
                 2 => { self.editor_api(); self.showcase(); },
                 3 => { self.viewer_api(); self.showcase(); },
+                4 => { self.dialog_api(); self.showcase(); },
                 7 => { self.misc_api(); self.showcase(); },
                 _ => crate::unimplemented_api()
             }
@@ -1293,6 +1324,50 @@ impl Plugin {
         match input {
             Some(path) => viewer::open_viewer(path),
             None => {},
+        }
+    }
+
+    pub fn dialog_api(&mut self) {
+        let dialog_guid: ffi::GUID = common::generate_guid();
+        let test_dialog: TestDialog = TestDialog { };
+
+        let dialog_items: Vec<dialog::FarDialogItem>;
+        dialog_items = vec!(dialog::FarDialogItem::DoubleBox {
+            x1: 3,
+            y1: 1,
+            x2: 36,
+            y2: 8,
+            flags: dialog::FARDIALOGITEMFLAGS::DIF_NONE,
+            title: Some(WideString::from("Dialog")),
+        },
+        dialog::FarDialogItem::Text {
+            x1: 4,
+            y: 6,
+            x2: 36,
+            mask: None,
+            flags: dialog::FARDIALOGITEMFLAGS::DIF_SEPARATOR,
+            text: None,
+        },
+        dialog::FarDialogItem::Button {
+            x: 12,
+            y: 7,
+            selected: true,
+            flags: dialog::FARDIALOGITEMFLAGS::DIF_NONE,
+            text: WideString::from("Ok"),
+        },
+        dialog::FarDialogItem::Button {
+            x: 19,
+            y: 7,
+            selected: true,
+            flags: dialog::FARDIALOGITEMFLAGS::DIF_NONE,
+            text: WideString::from("Cancel"),
+        });
+
+        match dialog::Dialog::init(self.guid, dialog_guid, -1, -1, 40, 10,
+                                     None, dialog_items,
+                                     dialog::FARDIALOGFLAGS::FDLG_NONE, test_dialog) {
+            Ok(dialog) => dialog.run(),
+            Err(_) => {},
         }
     }
 

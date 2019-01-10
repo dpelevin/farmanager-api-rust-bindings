@@ -16,7 +16,7 @@ pub use crate::ffi::GUID as GUID;
 pub use crate::ffi::HANDLE as HANDLE;
 
 pub mod ffi;
-mod common;
+pub mod common;
 pub mod basic;
 pub mod panel;
 pub mod dialog;

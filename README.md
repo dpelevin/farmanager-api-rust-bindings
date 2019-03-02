@@ -97,9 +97,9 @@ Export functions
 Service functions
 
 - [ ] [DefDlgProc](https://api.farmanager.com/ru/service_functions/defdlgproc.html)
-- [ ] [DialogFree](https://api.farmanager.com/ru/service_functions/dialogfree.html)
-- [ ] [DialogInit](https://api.farmanager.com/ru/service_functions/dialoginit.html)
-- [ ] [DialogRun](https://api.farmanager.com/ru/service_functions/dialogrun.html)
+- [x] [DialogFree](https://api.farmanager.com/ru/service_functions/dialogfree.html)
+- [x] [DialogInit](https://api.farmanager.com/ru/service_functions/dialoginit.html)
+- [x] [DialogRun](https://api.farmanager.com/ru/service_functions/dialogrun.html)
 - [ ] [SendDlgMessage](https://api.farmanager.com/ru/service_functions/senddlgmessage.html)
 
 ### Settings API

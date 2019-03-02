@@ -14,16 +14,121 @@ pub use crate::ffi::FARDIALOGFLAGS as FARDIALOGFLAGS;
 pub use crate::ffi::FARDIALOGITEMFLAGS as FARDIALOGITEMFLAGS;
 pub use crate::ffi::FARMESSAGE as FARMESSAGE;
 
+pub enum ButtonSelection {
+    Deselected = 0,
+    Selected = 1
+}
+
+impl From<u8> for ButtonSelection {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => ButtonSelection::Deselected,
+            1 => ButtonSelection::Selected,
+            _ => unimplemented!()
+        }
+    }
+}
+
+impl Into<DialogItemSelection> for ButtonSelection {
+    fn into(self) -> DialogItemSelection {
+        DialogItemSelection { value: self as u8 }
+    }
+}
+
+pub enum CheckBoxSelection {
+    Deselected = 0,
+    Selected = 1,
+    Undefined = 2
+}
+
+impl From<u8> for CheckBoxSelection {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => CheckBoxSelection::Deselected,
+            1 => CheckBoxSelection::Selected,
+            2 => CheckBoxSelection::Undefined,
+            _ => unimplemented!()
+        }
+    }
+}
+
+impl Into<DialogItemSelection> for CheckBoxSelection {
+    fn into(self) -> DialogItemSelection {
+        DialogItemSelection { value: self as u8 }
+    }
+}
+
+pub enum RadioButtonSelection {
+    Previous = 0,
+    Active = 1
+}
+
+impl From<u8> for RadioButtonSelection {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => RadioButtonSelection::Previous,
+            1 => RadioButtonSelection::Active,
+            _ => unimplemented!()
+        }
+    }
+}
+
+impl Into<DialogItemSelection> for RadioButtonSelection {
+    fn into(self) -> DialogItemSelection {
+        DialogItemSelection { value: self as u8 }
+    }
+}
+
+pub struct DialogItemSelection {
+    value: u8
+}
+
+impl DialogItemSelection {
+
+    pub fn as_raw(self) -> u8 {
+        self.value
+    }
+
+    pub fn as_button(self) -> CheckBoxSelection {
+        CheckBoxSelection::from(self.value)
+    }
+
+    pub fn as_check_box(self) -> CheckBoxSelection {
+        CheckBoxSelection::from(self.value)
+    }
+
+    pub fn as_radio_button(self) -> RadioButtonSelection {
+        RadioButtonSelection::from(self.value)
+    }
+}
+
 pub enum FarDialogItem {
+    CheckBox { x: isize, y: isize, selected: DialogItemSelection, flags: FARDIALOGITEMFLAGS, text: WideString },
     Text { x1: isize, y: isize, x2: isize, mask: Option<WideString>, flags: FARDIALOGITEMFLAGS, text: Option<WideString> },
     SingleBox { x1: isize, y1: isize, x2: isize, y2: isize, flags: FARDIALOGITEMFLAGS, title: Option<WideString> },
     DoubleBox { x1: isize, y1: isize, x2: isize, y2: isize, flags: FARDIALOGITEMFLAGS, title: Option<WideString> },
-    Button { x: isize, y: isize, selected: bool, flags: FARDIALOGITEMFLAGS, text: WideString },
+    RadioButton { x: isize, y: isize, selected: DialogItemSelection, flags: FARDIALOGITEMFLAGS, text: WideString },
+    Button { x: isize, y: isize, selected: DialogItemSelection, flags: FARDIALOGITEMFLAGS, text: WideString },
 }
 
 impl Into<ffi::FarDialogItem> for FarDialogItem {
     fn into(self) -> ffi::FarDialogItem {
         match self {
+            FarDialogItem::CheckBox { x, y, selected, flags, text } => ffi::FarDialogItem {
+                item_type: ffi::FARDIALOGITEMTYPES::DI_CHECKBOX,
+                x1: x,
+                y1: y,
+                x2: 0,
+                y2: y,
+                param: ffi::FarDialogItemParam { selected: selected.value as libc::intptr_t },
+                history: ptr::null(),
+                mask: ptr::null(),
+                flags,
+                data: text.as_ptr(),
+                max_length: 0,
+                user_data: 0,
+                reserved: [0; 2]
+            },
             FarDialogItem::Text { x1, y, x2, mask, flags, text } => ffi::FarDialogItem {
                 item_type: ffi::FARDIALOGITEMTYPES::DI_TEXT,
                 x1,
@@ -81,18 +186,28 @@ impl Into<ffi::FarDialogItem> for FarDialogItem {
                 user_data: 0,
                 reserved: [0; 2]
             },
+            FarDialogItem::RadioButton { x, y, selected, flags, text } => ffi::FarDialogItem {
+                item_type: ffi::FARDIALOGITEMTYPES::DI_RADIOBUTTON,
+                x1: x,
+                y1: y,
+                x2: 0,
+                y2: y,
+                param: ffi::FarDialogItemParam { selected: selected.value as libc::intptr_t },
+                history: ptr::null(),
+                mask: ptr::null(),
+                flags,
+                data: text.as_ptr(),
+                max_length: 0,
+                user_data: 0,
+                reserved: [0; 2]
+            },
             FarDialogItem::Button { x, y, selected, flags, text } => ffi::FarDialogItem {
                 item_type: ffi::FARDIALOGITEMTYPES::DI_BUTTON,
                 x1: x,
                 y1: y,
                 x2: 0,
                 y2: y,
-                param: ffi::FarDialogItemParam {
-                    selected: match selected {
-                        true => 1,
-                        false => 0
-                    }
-                },
+                param: ffi::FarDialogItemParam { selected: selected.value as libc::intptr_t },
                 history: ptr::null(),
                 mask: ptr::null(),
                 flags,
@@ -190,7 +305,7 @@ pub enum FarMessage {
     DmGetDialogTitle,
 
     DnFirst,
-    DnBtnClick { id: isize, state: u8 },
+    DnBtnClick { id: isize, state: DialogItemSelection },
     DnCtlColorDialog,
     DnCtlColorDlgItem,
     DnCtlColorDlgList,
@@ -221,7 +336,9 @@ impl FarMessage {
     // TODO remove Option from return type as support for all FarMessages is implemented
     fn from(msg: ffi::FARMESSAGE, param1: libc::intptr_t, param2: *mut libc::c_void) -> Option<Self> {
         match msg {
-            FARMESSAGE::DN_BTNCLICK => Some(FarMessage::DnBtnClick { id: param1, state: param2 as u8 } ),
+            FARMESSAGE::DN_BTNCLICK => {
+                Some(FarMessage::DnBtnClick { id: param1 , state: DialogItemSelection { value: param2 as u8 } } )
+            },
             _ => None
         }
     }
@@ -293,7 +410,7 @@ impl FarMessage {
             FarMessage::DmGetDialogInfo => (ffi::FARMESSAGE::DM_GETDIALOGINFO, 0, ptr::null_mut()),
             FarMessage::DmGetDialogTitle => (ffi::FARMESSAGE::DM_GETDIALOGTITLE, 0, ptr::null_mut()),
             FarMessage::DnFirst => (ffi::FARMESSAGE::DN_FIRST, 0, ptr::null_mut()),
-            FarMessage::DnBtnClick { id, state } => (ffi::FARMESSAGE::DN_BTNCLICK, id, state as *mut libc::c_void),
+            FarMessage::DnBtnClick { id, state } => (ffi::FARMESSAGE::DN_BTNCLICK, id, state.value as *mut libc::c_void),
             FarMessage::DnCtlColorDialog => (ffi::FARMESSAGE::DN_CTLCOLORDIALOG, 0, ptr::null_mut()),
             FarMessage::DnCtlColorDlgItem => (ffi::FARMESSAGE::DN_CTLCOLORDLGITEM, 0, ptr::null_mut()),
             FarMessage::DnCtlColorDlgList => (ffi::FARMESSAGE::DN_CTLCOLORDLGLIST, 0, ptr::null_mut()),

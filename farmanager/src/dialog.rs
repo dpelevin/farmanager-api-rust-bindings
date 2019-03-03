@@ -105,8 +105,12 @@ impl DialogItemSelection {
 pub enum FarDialogItem {
     CheckBox { x: isize, y: isize, selected: DialogItemSelection, flags: FARDIALOGITEMFLAGS, text: WideString },
     Text { x1: isize, y: isize, x2: isize, mask: Option<WideString>, flags: FARDIALOGITEMFLAGS, text: Option<WideString> },
+    VText { x: isize, y1: isize, y2: isize, mask: Option<WideString>, flags: FARDIALOGITEMFLAGS, text: Option<WideString> },
     SingleBox { x1: isize, y1: isize, x2: isize, y2: isize, flags: FARDIALOGITEMFLAGS, title: Option<WideString> },
     DoubleBox { x1: isize, y1: isize, x2: isize, y2: isize, flags: FARDIALOGITEMFLAGS, title: Option<WideString> },
+    Edit { x1: isize, y: isize, x2: isize, history: Option<WideString>, flags: FARDIALOGITEMFLAGS, text: Option<WideString> },
+    FixEdit { x1: isize, y: isize, x2: isize, history: Option<WideString>, mask: Option<WideString>, flags: FARDIALOGITEMFLAGS, text: Option<WideString> },
+    PswEdit { x1: isize, y: isize, x2: isize, flags: FARDIALOGITEMFLAGS, text: Option<WideString> },
     RadioButton { x: isize, y: isize, selected: DialogItemSelection, flags: FARDIALOGITEMFLAGS, text: WideString },
     Button { x: isize, y: isize, selected: DialogItemSelection, flags: FARDIALOGITEMFLAGS, text: WideString },
 }
@@ -135,6 +139,27 @@ impl Into<ffi::FarDialogItem> for FarDialogItem {
                 y1: y,
                 x2,
                 y2: y,
+                param: ffi::FarDialogItemParam { reserved: 0 },
+                history: ptr::null(),
+                mask: match mask {
+                    Some(v) => v.as_ptr(),
+                    None => ptr::null(),
+                },
+                flags,
+                data: match text {
+                    Some(v) => v.as_ptr(),
+                    None => ptr::null(),
+                },
+                max_length: 0,
+                user_data: 0,
+                reserved: [0; 2]
+            },
+            FarDialogItem::VText { x, y1 , y2, mask, flags, text } => ffi::FarDialogItem {
+                item_type: ffi::FARDIALOGITEMTYPES::DI_VTEXT,
+                x1: x,
+                y1,
+                x2: x,
+                y2,
                 param: ffi::FarDialogItemParam { reserved: 0 },
                 history: ptr::null(),
                 mask: match mask {
@@ -179,6 +204,69 @@ impl Into<ffi::FarDialogItem> for FarDialogItem {
                 mask: ptr::null(),
                 flags,
                 data: match title {
+                    Some(v) => v.as_ptr(),
+                    None => ptr::null(),
+                },
+                max_length: 0,
+                user_data: 0,
+                reserved: [0; 2]
+            },
+            FarDialogItem::Edit { x1, y, x2, history, flags, text } => ffi::FarDialogItem {
+                item_type: ffi::FARDIALOGITEMTYPES::DI_EDIT,
+                x1,
+                y1: y,
+                x2,
+                y2: y,
+                param: ffi::FarDialogItemParam { reserved: 0 },
+                history: match history {
+                    Some(v) => v.as_ptr(),
+                    None => ptr::null(),
+                },
+                mask: ptr::null(),
+                flags,
+                data: match text {
+                    Some(v) => v.as_ptr(),
+                    None => ptr::null(),
+                },
+                max_length: 0,
+                user_data: 0,
+                reserved: [0; 2]
+            },
+            FarDialogItem::FixEdit { x1, y, x2, history, mask, flags, text } => ffi::FarDialogItem {
+                item_type: ffi::FARDIALOGITEMTYPES::DI_FIXEDIT,
+                x1,
+                y1: y,
+                x2,
+                y2: y,
+                param: ffi::FarDialogItemParam { reserved: 0 },
+                history: match history {
+                    Some(v) => v.as_ptr(),
+                    None => ptr::null(),
+                },
+                mask: match mask {
+                    Some(v) => v.as_ptr(),
+                    None => ptr::null(),
+                },
+                flags,
+                data: match text {
+                    Some(v) => v.as_ptr(),
+                    None => ptr::null(),
+                },
+                max_length: 0,
+                user_data: 0,
+                reserved: [0; 2]
+            },
+            FarDialogItem::PswEdit { x1, y, x2, flags, text } => ffi::FarDialogItem {
+                item_type: ffi::FARDIALOGITEMTYPES::DI_PSWEDIT,
+                x1,
+                y1: y,
+                x2,
+                y2: y,
+                param: ffi::FarDialogItemParam { reserved: 0 },
+                history: ptr::null(),
+                mask: ptr::null(),
+                flags,
+                data: match text {
                     Some(v) => v.as_ptr(),
                     None => ptr::null(),
                 },

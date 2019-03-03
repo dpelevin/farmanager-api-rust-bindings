@@ -69,9 +69,7 @@ impl dialog::FarDialog for TestDialog {
                 1
             },
             _ => {
-                // TODO uncomment as support for all FarMessages is implemented
-                // dialog::def_dlg_proc(h_dlg, msg)
-                0
+                dialog::def_dlg_proc(h_dlg, msg)
             },
         };
         trace!("<dlg_proc()");

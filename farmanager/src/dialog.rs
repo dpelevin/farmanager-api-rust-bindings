@@ -115,19 +115,19 @@ pub enum FarDialogItem {
     Button { x: isize, y: isize, selected: DialogItemSelection, flags: FARDIALOGITEMFLAGS, text: WideString },
 }
 
-impl Into<ffi::FarDialogItem> for FarDialogItem {
-    fn into(self) -> ffi::FarDialogItem {
+impl FarDialogItem {
+    fn as_raw(&self) -> ffi::FarDialogItem {
         match self {
             FarDialogItem::CheckBox { x, y, selected, flags, text } => ffi::FarDialogItem {
                 item_type: ffi::FARDIALOGITEMTYPES::DI_CHECKBOX,
-                x1: x,
-                y1: y,
+                x1: *x,
+                y1: *y,
                 x2: 0,
-                y2: y,
+                y2: *y,
                 param: ffi::FarDialogItemParam { selected: selected.value as libc::intptr_t },
                 history: ptr::null(),
                 mask: ptr::null(),
-                flags,
+                flags: *flags,
                 data: text.as_ptr(),
                 max_length: 0,
                 user_data: 0,
@@ -135,17 +135,17 @@ impl Into<ffi::FarDialogItem> for FarDialogItem {
             },
             FarDialogItem::Text { x1, y, x2, mask, flags, text } => ffi::FarDialogItem {
                 item_type: ffi::FARDIALOGITEMTYPES::DI_TEXT,
-                x1,
-                y1: y,
-                x2,
-                y2: y,
+                x1: *x1,
+                y1: *y,
+                x2: *x2,
+                y2: *y,
                 param: ffi::FarDialogItemParam { reserved: 0 },
                 history: ptr::null(),
                 mask: match mask {
                     Some(v) => v.as_ptr(),
                     None => ptr::null(),
                 },
-                flags,
+                flags: *flags,
                 data: match text {
                     Some(v) => v.as_ptr(),
                     None => ptr::null(),
@@ -156,17 +156,17 @@ impl Into<ffi::FarDialogItem> for FarDialogItem {
             },
             FarDialogItem::VText { x, y1 , y2, mask, flags, text } => ffi::FarDialogItem {
                 item_type: ffi::FARDIALOGITEMTYPES::DI_VTEXT,
-                x1: x,
-                y1,
-                x2: x,
-                y2,
+                x1: *x,
+                y1: *y1,
+                x2: *x,
+                y2: *y2,
                 param: ffi::FarDialogItemParam { reserved: 0 },
                 history: ptr::null(),
                 mask: match mask {
                     Some(v) => v.as_ptr(),
                     None => ptr::null(),
                 },
-                flags,
+                flags: *flags,
                 data: match text {
                     Some(v) => v.as_ptr(),
                     None => ptr::null(),
@@ -177,14 +177,14 @@ impl Into<ffi::FarDialogItem> for FarDialogItem {
             },
             FarDialogItem::SingleBox { x1, y1, x2, y2, flags, title } => ffi::FarDialogItem {
                 item_type: ffi::FARDIALOGITEMTYPES::DI_SINGLEBOX,
-                x1,
-                y1,
-                x2,
-                y2,
+                x1: *x1,
+                y1: *y1,
+                x2: *x2,
+                y2: *y2,
                 param: ffi::FarDialogItemParam { reserved: 0 },
                 history: ptr::null(),
                 mask: ptr::null(),
-                flags,
+                flags: *flags,
                 data: match title {
                     Some(v) => v.as_ptr(),
                     None => ptr::null(),
@@ -195,14 +195,14 @@ impl Into<ffi::FarDialogItem> for FarDialogItem {
             },
             FarDialogItem::DoubleBox { x1, y1, x2, y2, flags, title } => ffi::FarDialogItem {
                 item_type: ffi::FARDIALOGITEMTYPES::DI_DOUBLEBOX,
-                x1,
-                y1,
-                x2,
-                y2,
+                x1: *x1,
+                y1: *y1,
+                x2: *x2,
+                y2: *y2,
                 param: ffi::FarDialogItemParam { reserved: 0 },
                 history: ptr::null(),
                 mask: ptr::null(),
-                flags,
+                flags: *flags,
                 data: match title {
                     Some(v) => v.as_ptr(),
                     None => ptr::null(),
@@ -213,17 +213,17 @@ impl Into<ffi::FarDialogItem> for FarDialogItem {
             },
             FarDialogItem::Edit { x1, y, x2, history, flags, text } => ffi::FarDialogItem {
                 item_type: ffi::FARDIALOGITEMTYPES::DI_EDIT,
-                x1,
-                y1: y,
-                x2,
-                y2: y,
+                x1: *x1,
+                y1: *y,
+                x2: *x2,
+                y2: *y,
                 param: ffi::FarDialogItemParam { reserved: 0 },
                 history: match history {
                     Some(v) => v.as_ptr(),
                     None => ptr::null(),
                 },
                 mask: ptr::null(),
-                flags,
+                flags: *flags,
                 data: match text {
                     Some(v) => v.as_ptr(),
                     None => ptr::null(),
@@ -234,10 +234,10 @@ impl Into<ffi::FarDialogItem> for FarDialogItem {
             },
             FarDialogItem::FixEdit { x1, y, x2, history, mask, flags, text } => ffi::FarDialogItem {
                 item_type: ffi::FARDIALOGITEMTYPES::DI_FIXEDIT,
-                x1,
-                y1: y,
-                x2,
-                y2: y,
+                x1: *x1,
+                y1: *y,
+                x2: *x2,
+                y2: *y,
                 param: ffi::FarDialogItemParam { reserved: 0 },
                 history: match history {
                     Some(v) => v.as_ptr(),
@@ -247,7 +247,7 @@ impl Into<ffi::FarDialogItem> for FarDialogItem {
                     Some(v) => v.as_ptr(),
                     None => ptr::null(),
                 },
-                flags,
+                flags: *flags,
                 data: match text {
                     Some(v) => v.as_ptr(),
                     None => ptr::null(),
@@ -258,14 +258,14 @@ impl Into<ffi::FarDialogItem> for FarDialogItem {
             },
             FarDialogItem::PswEdit { x1, y, x2, flags, text } => ffi::FarDialogItem {
                 item_type: ffi::FARDIALOGITEMTYPES::DI_PSWEDIT,
-                x1,
-                y1: y,
-                x2,
-                y2: y,
+                x1: *x1,
+                y1: *y,
+                x2: *x2,
+                y2: *y,
                 param: ffi::FarDialogItemParam { reserved: 0 },
                 history: ptr::null(),
                 mask: ptr::null(),
-                flags,
+                flags: *flags,
                 data: match text {
                     Some(v) => v.as_ptr(),
                     None => ptr::null(),
@@ -276,14 +276,14 @@ impl Into<ffi::FarDialogItem> for FarDialogItem {
             },
             FarDialogItem::RadioButton { x, y, selected, flags, text } => ffi::FarDialogItem {
                 item_type: ffi::FARDIALOGITEMTYPES::DI_RADIOBUTTON,
-                x1: x,
-                y1: y,
+                x1: *x,
+                y1: *y,
                 x2: 0,
-                y2: y,
+                y2: *y,
                 param: ffi::FarDialogItemParam { selected: selected.value as libc::intptr_t },
                 history: ptr::null(),
                 mask: ptr::null(),
-                flags,
+                flags: *flags,
                 data: text.as_ptr(),
                 max_length: 0,
                 user_data: 0,
@@ -291,14 +291,14 @@ impl Into<ffi::FarDialogItem> for FarDialogItem {
             },
             FarDialogItem::Button { x, y, selected, flags, text } => ffi::FarDialogItem {
                 item_type: ffi::FARDIALOGITEMTYPES::DI_BUTTON,
-                x1: x,
-                y1: y,
+                x1: *x,
+                y1: *y,
                 x2: 0,
-                y2: y,
+                y2: *y,
                 param: ffi::FarDialogItemParam { selected: selected.value as libc::intptr_t },
                 history: ptr::null(),
                 mask: ptr::null(),
-                flags,
+                flags: *flags,
                 data: text.as_ptr(),
                 max_length: 0,
                 user_data: 0,
@@ -622,10 +622,7 @@ impl<F: FarDialog> Dialog<F> {
             Some(text) => text.as_ptr(),
             None => ptr::null(),
         };
-        let mut dialog_items_ffi: Vec<ffi::FarDialogItem> = Vec::new();
-        for di in dialog_items {
-            dialog_items_ffi.push(di.into());
-        }
+        let dialog_items_ffi: Vec<ffi::FarDialogItem> = (&dialog_items).iter().map(FarDialogItem::as_raw).collect();
         let handle: ffi::HANDLE = far_api(|far_api: &mut ffi::PluginStartupInfo| {
             far_api.dialog_init(&plugin_id, &id, x1, y1, x2, y2, help_topic, dialog_items_ffi.as_ptr(), dialog_items_ffi.len(), 0, flags, callback::<F>, &mut *internal as *mut F as *mut libc::c_void)
         });
